@@ -4,7 +4,6 @@ import (
 	"encoding/base64"
 	"fmt"
 	"io"
-	"strings"
 
 	"github.com/mitchellh/mapstructure"
 	"github.com/sirupsen/logrus"
@@ -42,19 +41,43 @@ func (fs *KeyringStorage) LoadConfig(config map[string]interface{}) error {
 }
 
 func (fs *KeyringStorage) Load() (io.Reader, error) {
-	var dataBuilder strings.Builder
-	for i := 0; ; i++ {
-		val, err := keyring.Get(KeyringService, fmt.Sprintf("ksv_chunk_%d", i))
-		if err != nil {
-			if err == keyring.ErrNotFound {
-				break
-			}
-			return nil, fmt.Errorf("error getting keyring value: %w", err)
-		}
-		dataBuilder.WriteString(val)
-	}
+	// Create a pipe
+	pr, pw := io.Pipe()
 
-	return base64.NewDecoder(base64.StdEncoding, strings.NewReader(dataBuilder.String())), nil
+	// Channel to capture any errors from the goroutine
+	errChan := make(chan error, 1)
+
+	// Goroutine to read chunks from the keyring and write to the pipe writer
+	go func() {
+		defer pw.Close()
+
+		for i := 0; ; i++ {
+			val, err := keyring.Get(KeyringService, fmt.Sprintf("ksv_chunk_%d", i))
+			if err != nil {
+				if err == keyring.ErrNotFound {
+					break
+				}
+				errChan <- fmt.Errorf("error getting keyring value: %w", err)
+				return
+			}
+			_, err = pw.Write([]byte(val))
+			if err != nil {
+				errChan <- fmt.Errorf("error writing to pipe: %w", err)
+				return
+			}
+		}
+		errChan <- nil
+	}()
+
+	// Wait for the goroutine to finish and check for errors
+	go func() {
+		if err := <-errChan; err != nil {
+			pw.CloseWithError(err)
+		}
+	}()
+
+	// Return a base64 decoder that reads from the pipe reader
+	return base64.NewDecoder(base64.StdEncoding, pr), nil
 }
 
 func (fs *KeyringStorage) Save(reader io.Reader) error {
