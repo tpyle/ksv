@@ -2,6 +2,7 @@ package generators
 
 import (
 	"crypto/rand"
+	"encoding/json"
 	"math/big"
 	"strconv"
 
@@ -19,6 +20,16 @@ type NumberGenerator struct {
 
 type NumberGeneratorParams struct {
 	Length int `json:"length"`
+}
+
+func (n *NumberGeneratorParams) MarshalJSON() ([]byte, error) {
+	var numberGeneratorParams struct {
+		Length string `json:"length"`
+	}
+
+	numberGeneratorParams.Length = strconv.Itoa(n.Length)
+
+	return json.Marshal(numberGeneratorParams)
 }
 
 func DecodeNumberGeneratorParams(params map[string]string) (NumberGeneratorParams, error) {
@@ -71,4 +82,10 @@ func (n *NumberGenerator) Generate(params map[string]string) (string, error) {
 
 func (n *NumberGenerator) GetRef() string {
 	return NumberGeneratorRef
+}
+
+func (n *NumberGenerator) GetDefaultParams() map[string]string {
+	return map[string]string{
+		"length": "4", // Default length of 4 for PINs
+	}
 }

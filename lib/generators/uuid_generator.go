@@ -33,3 +33,7 @@ func (n *UUIDGenerator) Generate(params map[string]string) (string, error) {
 func (n *UUIDGenerator) GetRef() string {
 	return UUIDGeneratorRef
 }
+
+func (n *UUIDGenerator) GetDefaultParams() map[string]string {
+	return map[string]string{}
+}

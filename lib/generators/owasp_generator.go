@@ -182,3 +182,15 @@ func (n *OWASPGenerator) Generate(params map[string]string) (string, error) {
 func (n *OWASPGenerator) GetRef() string {
 	return OWASPGeneratorRef
 }
+
+func (n *OWASPGenerator) GetDefaultParams() map[string]string {
+	// Complexity requirements are due to wipespread implementation, despite recommendations against them
+	return map[string]string{
+		"length":        "16",
+		"min_lowercase": "1",
+		"min_uppercase": "1",
+		"min_numbers":   "1",
+		"min_special":   "1",
+		"special_chars": OWASPSpecialCharacters,
+	}
+}

@@ -3,6 +3,7 @@ package generators
 type Generator interface {
 	Generate(params map[string]string) (string, error)
 	GetRef() string
+	GetDefaultParams() map[string]string
 }
 
 func GetGenerator(ref string) (bool, Generator) {
