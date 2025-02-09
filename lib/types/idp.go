@@ -8,20 +8,21 @@ type IDP struct {
 	KnownIDP KnownIDP `json:"knownIDP"`
 }
 
-func (i *IDP) Validate() error {
+func (i *IDP) Validate() []error {
+	var errs []error
 	if i.Url == "" {
-		return errors.ErrMissingIDPUrl
+		errs = append(errs, errors.ErrMissingIDPUrl)
 	}
 
 	if i.Name == "" {
-		return errors.ErrMissingIDPName
+		errs = append(errs, errors.ErrMissingIDPName)
 	}
 
 	if err := i.KnownIDP.Validate(); err != nil {
-		return err
+		errs = append(errs, err...)
 	}
 
-	return nil
+	return errs
 }
 
 type KnownIDP string
@@ -33,7 +34,7 @@ const (
 	Generic KnownIDP = "Generic"
 )
 
-func (k KnownIDP) Validate() error {
+func (k KnownIDP) Validate() []error {
 	switch k {
 	case Google:
 		return nil
@@ -44,6 +45,6 @@ func (k KnownIDP) Validate() error {
 	case Generic:
 		return nil
 	default:
-		return errors.ErrInvalidKnownIDP
+		return []error{errors.ErrInvalidKnownIDP}
 	}
 }

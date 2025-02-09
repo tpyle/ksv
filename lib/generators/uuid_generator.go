@@ -29,3 +29,7 @@ func (n *UUIDGenerator) Generate(params map[string]string) (string, error) {
 
 	return uuid.String(), nil
 }
+
+func (n *UUIDGenerator) GetRef() string {
+	return UUIDGeneratorRef
+}

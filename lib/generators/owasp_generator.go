@@ -26,22 +26,22 @@ type OWASPGenerator struct {
 }
 
 type OWASPGeneratorParams struct {
-	Length       int    `json:"length"`
-	MinLowercase int    `json:"min_lowercase"`
-	MinUppercase int    `json:"min_uppercase"`
-	MinNumbers   int    `json:"min_numbers"`
-	MinSpecial   int    `json:"min_special"`
-	SpecialChars string `json:"special_chars"`
+	Length       int    `mapstructure:"length" json:"length"`
+	MinLowercase int    `mapstructure:"min_lowercase" json:"min_lowercase"`
+	MinUppercase int    `mapstructure:"min_uppercase" json:"min_uppercase"`
+	MinNumbers   int    `mapstructure:"min_numbers" json:"min_numbers"`
+	MinSpecial   int    `mapstructure:"min_special" json:"min_special"`
+	SpecialChars string `mapstructure:"special_chars" json:"special_chars"`
 }
 
 func DecodeOWASPGeneratorParams(mapParams map[string]string) (OWASPGeneratorParams, error) {
 	var owaspGeneratorParams struct {
-		Length       string `json:"length"`
-		MinLowercase string `json:"min_lowercase"`
-		MinUppercase string `json:"min_uppercase"`
-		MinNumbers   string `json:"min_numbers"`
-		MinSpecial   string `json:"min_special"`
-		SpecialChars string `json:"special_chars"`
+		Length       string `mapstructure:"length" json:"length"`
+		MinLowercase string `mapstructure:"min_lowercase" json:"min_lowercase"`
+		MinUppercase string `mapstructure:"min_uppercase" json:"min_uppercase"`
+		MinNumbers   string `mapstructure:"min_numbers" json:"min_numbers"`
+		MinSpecial   string `mapstructure:"min_special" json:"min_special"`
+		SpecialChars string `mapstructure:"special_chars" json:"special_chars"`
 	}
 	err := mapstructure.Decode(mapParams, &owaspGeneratorParams)
 	if err != nil {
@@ -113,7 +113,8 @@ func CreateOrder(params OWASPGeneratorParams) []string {
 	for i := 0; i < params.MinSpecial; i++ {
 		order = append(order, owaspSpecialRef)
 	}
-	for i := 0; i < params.Length-len(order); i++ {
+	iterations := params.Length - len(order)
+	for i := 0; i < iterations; i++ {
 		order = append(order, owaspAnyRef)
 	}
 	return ShuffleArray(order)
@@ -176,4 +177,8 @@ func (n *OWASPGenerator) Generate(params map[string]string) (string, error) {
 	}
 
 	return string(result), nil
+}
+
+func (n *OWASPGenerator) GetRef() string {
+	return OWASPGeneratorRef
 }

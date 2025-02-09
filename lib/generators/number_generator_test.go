@@ -6,7 +6,7 @@ import (
 	"github.com/tpyle/ksv/lib/errors"
 )
 
-func TestGenerate(t *testing.T) {
+func TestNumberGenerate(t *testing.T) {
 	generator := &NumberGenerator{}
 
 	t.Run("Length is zero", func(t *testing.T) {

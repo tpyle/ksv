@@ -68,3 +68,7 @@ func (n *NumberGenerator) Generate(params map[string]string) (string, error) {
 
 	return string(result), nil
 }
+
+func (n *NumberGenerator) GetRef() string {
+	return NumberGeneratorRef
+}
