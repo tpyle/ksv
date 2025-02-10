@@ -3,6 +3,8 @@ package cfg
 import (
 	"fmt"
 	"os"
+	"path/filepath"
+	"runtime"
 	"strings"
 
 	"github.com/sirupsen/logrus"
@@ -11,7 +13,7 @@ import (
 )
 
 type Config struct {
-	LocalStorageConfig *LocalStorageConfig `mapstructure:"local_storage"`
+	LocalStorageConfig LocalStorageConfig `mapstructure:"local_storage"`
 }
 
 type LocalStorageConfig struct {
@@ -26,7 +28,7 @@ func LoadConfig(configPath string) (*Config, error) {
 	if os.IsNotExist(err) || fi.IsDir() {
 		logrus.Info("Config file does not exist, creating default config")
 		if err := WriteDefaultConfig(configPath); err != nil {
-			panic(err)
+			return nil, fmt.Errorf("error writing default config: %w", err)
 		}
 	}
 
@@ -47,12 +49,28 @@ func LoadConfig(configPath string) (*Config, error) {
 	return &config, nil
 }
 
+// getDefaultFilePath returns the default file path based on the operating system.
+func getDefaultFilePath() string {
+	switch runtime.GOOS {
+	case "windows":
+		return filepath.Join(os.Getenv("AppData"), "ksv", "ksv.dat")
+	case "darwin":
+		return filepath.Join(os.Getenv("HOME"), "Library", "Application Support", "ksv", "ksv.dat")
+	default: // "linux" and other Unix-like systems
+		return filepath.Join(os.Getenv("HOME"), ".local", "share", "ksv", "ksv.dat")
+	}
+}
+
 // WriteDefaultConfig writes the default configuration to a file.
 func WriteDefaultConfig(configPath string) error {
 	viper.SetConfigFile(configPath)
 
 	viper.SetDefault("local_storage.type", "file")
-	viper.SetDefault("local_storage.config.file_path", "ksv.dat")
+	viper.SetDefault("local_storage.config.file_path", getDefaultFilePath())
+
+	if err := os.MkdirAll(filepath.Dir(configPath), 0700); err != nil {
+		return fmt.Errorf("error creating config directory: %w", err)
+	}
 
 	if err := viper.WriteConfigAs(configPath); err != nil {
 		return fmt.Errorf("error writing default config file: %w", err)

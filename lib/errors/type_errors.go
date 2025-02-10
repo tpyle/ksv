@@ -26,5 +26,6 @@ var (
 )
 
 var (
+	ErrEmptyLocalStorage           = fmt.Errorf("local storage is empty")
 	ErrUnsupportedLocalStorageType = fmt.Errorf("unsupported local storage type")
 )

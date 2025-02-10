@@ -8,6 +8,7 @@ import (
 
 	"github.com/mitchellh/mapstructure"
 	"github.com/sirupsen/logrus"
+	"github.com/tpyle/ksv/lib/errors"
 	"github.com/zalando/go-keyring"
 )
 
@@ -47,6 +48,9 @@ func (fs *KeyringStorage) Load() (io.Reader, error) {
 		val, err := keyring.Get(KeyringService, fmt.Sprintf("ksv_chunk_%d", i))
 		if err != nil {
 			if err == keyring.ErrNotFound {
+				if i == 0 {
+					return nil, errors.ErrEmptyLocalStorage
+				}
 				break
 			}
 			return nil, fmt.Errorf("error getting keyring value: %w", err)

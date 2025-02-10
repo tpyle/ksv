@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/mitchellh/mapstructure"
+	"github.com/tpyle/ksv/lib/errors"
 )
 
 const (
@@ -39,6 +40,9 @@ func (fs *FileStorage) LoadConfig(config map[string]interface{}) error {
 func (fs *FileStorage) Load() (io.Reader, error) {
 	file, err := os.Open(fs.Config.FilePath)
 	if err != nil {
+		if err == os.ErrNotExist {
+			return nil, errors.ErrEmptyLocalStorage
+		}
 		return nil, fmt.Errorf("error opening file: %w", err)
 	}
 
