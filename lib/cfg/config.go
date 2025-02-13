@@ -16,6 +16,19 @@ type Config struct {
 	LocalStorageConfig LocalStorageConfig `mapstructure:"local_storage"`
 }
 
+func (c *Config) Validate() error {
+	if c.LocalStorageConfig.Type == "" {
+		return fmt.Errorf("local_storage.type is required")
+	}
+
+	_, err := localstorage.GetLocalStorage(c.LocalStorageConfig.Type, c.LocalStorageConfig.Config)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 type LocalStorageConfig struct {
 	Type         string                    `mapstructure:"type"`
 	Config       map[string]interface{}    `mapstructure:"config"`
@@ -44,6 +57,11 @@ func LoadConfig(configPath string) (*Config, error) {
 	var config Config
 	if err := viper.Unmarshal(&config); err != nil {
 		return nil, fmt.Errorf("error unmarshaling config: %w", err)
+	}
+
+	config.LocalStorageConfig.LocalStorage, err = localstorage.GetLocalStorage(config.LocalStorageConfig.Type, config.LocalStorageConfig.Config)
+	if err != nil {
+		return nil, fmt.Errorf("error getting local storage: %w", err)
 	}
 
 	return &config, nil
