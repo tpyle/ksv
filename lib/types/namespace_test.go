@@ -4,23 +4,21 @@ import (
 	"testing"
 )
 
-func TestKSV_Validate(t *testing.T) {
+func TestNamespace_Validate(t *testing.T) {
 	validSite := Site{
 		Url:  "https://example.com",
 		Name: "Example",
 	}
 	invalidSite := Site{}
 
-	ksv := KSV{
-		DefaultNamespace: Namespace{
-			Sites: []Site{
-				validSite,
-				invalidSite,
-			},
+	namespace := Namespace{
+		Sites: []Site{
+			validSite,
+			invalidSite,
 		},
 	}
 
-	errs := ksv.Validate()
+	errs := namespace.Validate()
 	if len(errs) == 0 {
 		t.Errorf("Expected validation errors, got none")
 	}

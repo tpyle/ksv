@@ -1,13 +1,19 @@
 package types
 
 type KSV struct {
-	Sites []Site `json:"sites"`
+	Namespaces map[string]Namespace `json:"namespaces"`
+
+	// Default Namespace
+	DefaultNamespace Namespace `json:"default_namespace"`
 }
 
 func (k *KSV) Validate() []error {
 	var errs []error
-	for _, s := range k.Sites {
-		errs = append(errs, s.Validate()...)
+	errs = append(errs, k.DefaultNamespace.Validate()...)
+
+	for _, n := range k.Namespaces {
+		errs = append(errs, n.Validate()...)
 	}
+
 	return errs
 }
