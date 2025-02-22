@@ -1,6 +1,8 @@
 package types
 
-import "github.com/tpyle/ksv/lib/errors"
+import (
+	"github.com/tpyle/ksv/lib/errors"
+)
 
 type Site struct {
 	Url       string `json:"url"`
@@ -9,7 +11,7 @@ type Site struct {
 	GenericId string `json:"genericId"`
 	Notes     string `json:"notes"`
 
-	Entries []Entry `json:"entries"`
+	Entries map[string]Entry `json:"entries"`
 }
 
 func (s *Site) Validate() []error {

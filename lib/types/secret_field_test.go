@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/tpyle/ksv/lib/errors"
 	"github.com/tpyle/ksv/lib/types"
 )
 
@@ -17,8 +16,9 @@ func TestGeneratorReference_UnmarshalJSON(t *testing.T) {
 		var gr types.GeneratorReference
 		err := json.Unmarshal([]byte(validJSON), &gr)
 		assert.NoError(t, err)
-		assert.Equal(t, "uuid", gr.Ref)
-		assert.Equal(t, map[string]string{"length": "10"}, gr.Params)
+		assert.Equal(t, types.KSVString("uuid"), gr.Ref)
+		lval := types.KSVString("10")
+		assert.Equal(t, types.KSVMap{"length": &lval}, gr.Params)
 		assert.True(t, gr.Supported)
 		assert.NotNil(t, gr.Generator)
 	})
@@ -27,8 +27,9 @@ func TestGeneratorReference_UnmarshalJSON(t *testing.T) {
 		var gr types.GeneratorReference
 		err := json.Unmarshal([]byte(invalidJSON), &gr)
 		assert.NoError(t, err)
-		assert.Equal(t, "invalid", gr.Ref)
-		assert.Equal(t, map[string]string{"length": "10"}, gr.Params)
+		assert.Equal(t, types.KSVString("invalid"), gr.Ref)
+		lval := types.KSVString("10")
+		assert.Equal(t, types.KSVMap{"length": &lval}, gr.Params)
 		assert.False(t, gr.Supported)
 		assert.NotNil(t, gr.Generator)
 	})
@@ -43,26 +44,12 @@ func TestSecretField_Validate(t *testing.T) {
 		{
 			name: "valid SecretField",
 			field: types.SecretField{
-				FieldName: "exampleField",
-				Value:     "exampleValue",
+				Value: "exampleValue",
 				GeneratorRef: types.GeneratorReference{
-					Ref:    "uuid",
-					Params: map[string]string{"length": "10"},
+					Ref: "uuid",
 				},
 			},
 			wantErr: nil,
-		},
-		{
-			name: "missing FieldName",
-			field: types.SecretField{
-				FieldName: "",
-				Value:     "exampleValue",
-				GeneratorRef: types.GeneratorReference{
-					Ref:    "uuid",
-					Params: map[string]string{"length": "10"},
-				},
-			},
-			wantErr: []error{errors.ErrMissingSecretFieldName},
 		},
 	}
 
