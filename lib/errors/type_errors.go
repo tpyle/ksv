@@ -15,9 +15,13 @@ var (
 )
 
 var (
-	ErrMissingDistinguishingName = fmt.Errorf("missing parameter: Distinguishing Name is required")
-	ErrMissingCustomFieldName    = fmt.Errorf("missing parameter: Custom Field Name is required")
-	ErrMissingSecretFieldName    = fmt.Errorf("missing parameter: Secret Field Name is required")
+	ErrMissingUsername        = fmt.Errorf("missing parameter: Username is required")
+	ErrMissingCustomFieldName = fmt.Errorf("missing parameter: Custom Field Name is required")
+	ErrMissingSecretFieldName = fmt.Errorf("missing parameter: Secret Field Name is required")
+)
+
+var (
+	ErrEmptyPathElement = fmt.Errorf("empty path element")
 )
 
 var (
@@ -28,4 +32,14 @@ var (
 var (
 	ErrEmptyLocalStorage           = fmt.Errorf("local storage is empty")
 	ErrUnsupportedLocalStorageType = fmt.Errorf("unsupported local storage type")
+)
+
+var (
+	ErrInvalidPath = fmt.Errorf("invalid path")
+	ErrNoSuchPath  = fmt.Errorf("no such path")
+	ErrCannotSet   = fmt.Errorf("cannot set this value")
+)
+
+var (
+	ErrClipboardUnavailable = fmt.Errorf("clipboard unavailable")
 )
