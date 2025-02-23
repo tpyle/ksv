@@ -1,7 +1,6 @@
 package localstorage
 
 import (
-	"bytes"
 	"os"
 	"testing"
 
@@ -36,12 +35,9 @@ func TestFileStorage_Load(t *testing.T) {
 
 	fs := &FileStorage{Config: &FileStorageConfig{FilePath: filePath}}
 
-	reader, err := fs.Load()
+	data, err := fs.Load()
 	assert.NoError(t, err)
-
-	buf := new(bytes.Buffer)
-	buf.ReadFrom(reader)
-	assert.Equal(t, string(content), buf.String())
+	assert.Equal(t, content, data)
 }
 
 func TestFileStorage_Save(t *testing.T) {
@@ -51,7 +47,7 @@ func TestFileStorage_Save(t *testing.T) {
 	fs := &FileStorage{Config: &FileStorageConfig{FilePath: filePath}}
 
 	content := []byte("test content")
-	err := fs.Save(bytes.NewReader(content))
+	err := fs.Save(content)
 	assert.NoError(t, err)
 
 	result, err := os.ReadFile(filePath)

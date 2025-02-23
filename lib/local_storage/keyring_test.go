@@ -3,7 +3,6 @@ package localstorage_test
 import (
 	"encoding/base64"
 	"fmt"
-	"io"
 	"strings"
 	"testing"
 
@@ -35,10 +34,7 @@ func TestKeyringStorage_Load(t *testing.T) {
 	}
 
 	ks := &localstorage.KeyringStorage{}
-	reader, err := ks.Load()
-	assert.NoError(t, err)
-
-	loadedData, err := io.ReadAll(reader)
+	loadedData, err := ks.Load()
 	assert.NoError(t, err)
 	assert.Equal(t, data, string(loadedData))
 }
@@ -47,10 +43,9 @@ func TestKeyringStorage_Save(t *testing.T) {
 	keyring.MockInit()
 
 	data := strings.Repeat("a", 5000) // larger data to test chunking
-	reader := strings.NewReader(data)
 
 	ks := &localstorage.KeyringStorage{}
-	err := ks.Save(reader)
+	err := ks.Save([]byte(data))
 	assert.NoError(t, err)
 
 	var loadedDataBuilder strings.Builder

@@ -3,12 +3,11 @@ package localstorage
 import (
 	"encoding/base64"
 	"fmt"
-	"io"
 	"strings"
 
 	"github.com/mitchellh/mapstructure"
 	"github.com/sirupsen/logrus"
-	"github.com/tpyle/ksv/lib/errors"
+	"github.com/tpyle/ksv/lib/ksverrors"
 	"github.com/zalando/go-keyring"
 )
 
@@ -42,14 +41,14 @@ func (fs *KeyringStorage) LoadConfig(config map[string]interface{}) error {
 	return nil
 }
 
-func (fs *KeyringStorage) Load() (io.Reader, error) {
+func (fs *KeyringStorage) Load() ([]byte, error) {
 	var dataBuilder strings.Builder
 	for i := 0; ; i++ {
 		val, err := keyring.Get(KeyringService, fmt.Sprintf("ksv_chunk_%d", i))
 		if err != nil {
 			if err == keyring.ErrNotFound {
 				if i == 0 {
-					return nil, errors.ErrEmptyLocalStorage
+					return nil, ksverrors.ErrEmptyLocalStorage
 				}
 				break
 			}
@@ -58,84 +57,34 @@ func (fs *KeyringStorage) Load() (io.Reader, error) {
 		dataBuilder.WriteString(val)
 	}
 
-	return base64.NewDecoder(base64.StdEncoding, strings.NewReader(dataBuilder.String())), nil
+	data, err := base64.StdEncoding.DecodeString(dataBuilder.String())
+	if err != nil {
+		return nil, fmt.Errorf("error decoding base64 data: %w", err)
+	}
+
+	return data, nil
 }
 
-func (fs *KeyringStorage) Save(reader io.Reader) error {
-	// Create a pipe
-	pr, pw := io.Pipe()
+func (fs *KeyringStorage) Save(data []byte) error {
+	base64Data := base64.StdEncoding.EncodeToString(data)
 
-	// Create a base64 encoder that writes to the pipe writer
-	base64Encoder := base64.NewEncoder(base64.StdEncoding, pw)
-
-	// Channel to capture any errors from the goroutines
-	errChan := make(chan error, 1)
-
-	// Goroutine to read from the reader and write to the base64 encoder
-	go func() {
-		defer pw.Close()
-		_, err := io.Copy(base64Encoder, reader)
+	chunkNum := 0
+	for _, chunk := range ChunkString(base64Data, ChunkSize) {
+		err := keyring.Set(KeyringService, fmt.Sprintf("ksv_chunk_%d", chunkNum), chunk)
 		if err != nil {
-			errChan <- fmt.Errorf("error copying data to base64 encoder: %w", err)
-			return
+			return fmt.Errorf("error setting keyring value: %w", err)
 		}
-		err = base64Encoder.Close()
+		chunkNum++
+	}
+
+	// Delete any remaining old chunks
+	for i := chunkNum; ; i++ {
+		err := keyring.Delete(KeyringService, fmt.Sprintf("ksv_chunk_%d", i))
 		if err != nil {
-			errChan <- fmt.Errorf("error closing base64 encoder: %w", err)
-			return
-		}
-		errChan <- nil
-	}()
-
-	// Goroutine to read from the pipe reader and write chunks to the keyring
-	go func() {
-		defer pr.Close()
-
-		chunk := make([]byte, ChunkSize)
-		chunkNum := 0
-		for {
-			n, err := io.ReadFull(pr, chunk)
-			if err != nil {
-				if err == io.EOF || err == io.ErrUnexpectedEOF {
-					// Only write the actual bytes read
-					err = keyring.Set(KeyringService, fmt.Sprintf("ksv_chunk_%d", chunkNum), string(chunk[:n]))
-					if err != nil {
-						errChan <- fmt.Errorf("error setting keyring value: %w", err)
-						return
-					}
-					chunkNum++
-					break
-				}
-				errChan <- fmt.Errorf("error reading from pipe: %w", err)
-				return
+			if err == keyring.ErrNotFound {
+				break
 			}
-
-			// Only write the actual bytes read
-			err = keyring.Set(KeyringService, fmt.Sprintf("ksv_chunk_%d", chunkNum), string(chunk[:n]))
-			if err != nil {
-				errChan <- fmt.Errorf("error setting keyring value: %w", err)
-				return
-			}
-			chunkNum++
-		}
-
-		// Delete any remaining old chunks
-		for i := chunkNum; ; i++ {
-			err := keyring.Delete(KeyringService, fmt.Sprintf("ksv_chunk_%d", i))
-			if err != nil {
-				if err == keyring.ErrNotFound {
-					break
-				}
-				logrus.WithError(err).Error("error deleting old keyring value")
-			}
-		}
-		errChan <- nil
-	}()
-
-	// Wait for both goroutines to finish and check for errors
-	for i := 0; i < 2; i++ {
-		if err := <-errChan; err != nil {
-			return err
+			logrus.WithError(err).Error("error deleting old keyring value")
 		}
 	}
 

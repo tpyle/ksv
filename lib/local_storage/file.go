@@ -4,9 +4,12 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
+
+	lerrors "errors"
 
 	"github.com/mitchellh/mapstructure"
-	"github.com/tpyle/ksv/lib/errors"
+	"github.com/tpyle/ksv/lib/ksverrors"
 )
 
 const (
@@ -37,20 +40,28 @@ func (fs *FileStorage) LoadConfig(config map[string]interface{}) error {
 	return nil
 }
 
-func (fs *FileStorage) Load() (io.Reader, error) {
+func (fs *FileStorage) Load() ([]byte, error) {
 	file, err := os.Open(fs.Config.FilePath)
 	if err != nil {
-		if err == os.ErrNotExist {
-			return nil, errors.ErrEmptyLocalStorage
+		if lerrors.Is(err, os.ErrNotExist) {
+			return nil, ksverrors.ErrEmptyLocalStorage
 		}
 		return nil, fmt.Errorf("error opening file: %w", err)
 	}
 
-	return file, nil
+	return io.ReadAll(file)
 }
 
-func (fs *FileStorage) Save(reader io.Reader) error {
+func (fs *FileStorage) Save(data []byte) error {
 	var file *os.File
+
+	fileDir := filepath.Dir(fs.Config.FilePath)
+	if _, err := os.Stat(fileDir); os.IsNotExist(err) {
+		if err := os.MkdirAll(fileDir, 0700); err != nil {
+			return fmt.Errorf("error creating directory: %w", err)
+		}
+	}
+
 	if _, err := os.Stat(fs.Config.FilePath); os.IsNotExist(err) {
 		file, err = os.Create(fs.Config.FilePath)
 		if err != nil {
@@ -71,8 +82,7 @@ func (fs *FileStorage) Save(reader io.Reader) error {
 		return fmt.Errorf("error truncating file: %w", err)
 	}
 
-	_, err := io.Copy(file, reader)
-	if err != nil {
+	if _, err := file.Write(data); err != nil {
 		return fmt.Errorf("error writing to file: %w", err)
 	}
 
