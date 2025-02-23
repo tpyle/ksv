@@ -1,28 +1,27 @@
 package types
 
 import (
-	"github.com/tpyle/ksv/lib/errors"
+	"github.com/tpyle/ksv/lib/ksverrors"
 )
 
 type SecretField struct {
-	Value        KSVString          `json:"value"`
-	GeneratorRef GeneratorReference `json:"generatorRef"`
+	Value        *KSVString          `json:"value"`
+	GeneratorRef *GeneratorReference `json:"generatorRef"`
 }
 
 func (sf *SecretField) Get(path string) (Queryable, error) {
 	switch path {
 	case "value":
-		return &sf.Value, nil
+		return sf.Value, nil
 	case "generatorRef":
-		return nil, nil
-		// return &sf.GeneratorRef, nil
+		return sf.GeneratorRef, nil
 	default:
-		return nil, errors.ErrNoSuchPath
+		return nil, ksverrors.ErrNoSuchPath
 	}
 }
 
 func (sf *SecretField) Set(value string) error {
-	return errors.ErrCannotSet
+	return ksverrors.ErrCannotSet
 }
 
 func (sf *SecretField) Validate() []error {

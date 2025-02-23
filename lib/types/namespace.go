@@ -1,9 +1,9 @@
 package types
 
-import "github.com/tpyle/ksv/lib/errors"
+import "github.com/tpyle/ksv/lib/ksverrors"
 
 type Namespace struct {
-	Sites KSVMap `json:"sites"`
+	Sites KSVMap[*Site] `json:"sites"`
 }
 
 func (n *Namespace) Validate() []error {
@@ -18,11 +18,11 @@ func (n *Namespace) Get(path string) (Queryable, error) {
 	if site, ok := n.Sites[path]; ok {
 		return site, nil
 	}
-	return nil, errors.ErrNoSuchPath
+	return nil, ksverrors.ErrNoSuchPath
 }
 
 func (n *Namespace) Set(value string) error {
-	return errors.ErrCannotSet
+	return ksverrors.ErrCannotSet
 }
 
 func (n *Namespace) GetChildren() []string {

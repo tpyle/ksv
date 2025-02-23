@@ -1,25 +1,26 @@
 package types
 
-import "github.com/tpyle/ksv/lib/errors"
+import "github.com/tpyle/ksv/lib/ksverrors"
 
-type KSVMap map[string]Queryable
+type KSVMap[T Queryable] map[string]T
 
-func (m *KSVMap) Get(path string) (Queryable, error) {
+func (m *KSVMap[T]) Get(path string) (Queryable, error) {
 	if val, ok := (*m)[path]; ok {
 		return val, nil
 	}
-	return nil, errors.ErrNoSuchPath
+	var zero T
+	return zero, ksverrors.ErrNoSuchPath
 }
 
-func (m *KSVMap) Set(value string) error {
-	return errors.ErrCannotSet
+func (m *KSVMap[T]) Set(value string) error {
+	return ksverrors.ErrCannotSet
 }
 
-func (m *KSVMap) Validate() []error {
+func (m *KSVMap[T]) Validate() []error {
 	return nil
 }
 
-func (m *KSVMap) GetChildren() []string {
+func (m *KSVMap[T]) GetChildren() []string {
 	var children []string
 	for key := range *m {
 		val := (*m)[key]
@@ -28,7 +29,7 @@ func (m *KSVMap) GetChildren() []string {
 	return children
 }
 
-func (m *KSVMap) GetValues() map[string]string {
+func (m *KSVMap[T]) GetValues() map[string]string {
 	values := make(map[string]string)
 	for key, val := range *m {
 		for subKey, subVal := range PrefixMap(key, val.GetValues()) {
@@ -38,11 +39,11 @@ func (m *KSVMap) GetValues() map[string]string {
 	return values
 }
 
-func (m *KSVMap) String() string {
+func (m *KSVMap[T]) String() string {
 	return ""
 }
 
-func (m *KSVMap) ToMap() map[string]string {
+func (m *KSVMap[T]) ToMap() map[string]string {
 	mapped := make(map[string]string)
 	for key, val := range *m {
 		mapped[key] = val.String()
@@ -50,11 +51,10 @@ func (m *KSVMap) ToMap() map[string]string {
 	return mapped
 }
 
-func NewKSVMap(vals map[string]string) KSVMap {
-	m := KSVMap{}
+func NewKSVMap[T Queryable](vals map[string]string, createFunc func(string) T) *KSVMap[T] {
+	m := KSVMap[T]{}
 	for key, val := range vals {
-		val := KSVString(val)
-		m[key] = &val
+		m[key] = createFunc(val)
 	}
-	return m
+	return &m
 }

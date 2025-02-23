@@ -3,7 +3,7 @@ package types
 import (
 	"testing"
 
-	"github.com/tpyle/ksv/lib/errors"
+	"github.com/tpyle/ksv/lib/ksverrors"
 )
 
 func TestIDPValidate(t *testing.T) {
@@ -15,8 +15,12 @@ func TestIDPValidate(t *testing.T) {
 		{
 			name: "valid IDP",
 			idp: IDP{
-				Url:      "https://example.com",
-				Name:     "Example",
+				Url: KSVString{
+					Value: "https://example.com",
+				},
+				Name: KSVString{
+					Value: "Example",
+				},
 				KnownIDP: Google,
 			},
 			wantErr: nil,
@@ -24,29 +28,35 @@ func TestIDPValidate(t *testing.T) {
 		{
 			name: "missing URL",
 			idp: IDP{
-				Url:      "",
-				Name:     "Example",
+				Url: KSVString{
+					Value: "",
+				},
+				Name:     KSVString{Value: "Example"},
 				KnownIDP: Google,
 			},
-			wantErr: []error{errors.ErrMissingIDPUrl},
+			wantErr: []error{ksverrors.ErrMissingIDPUrl},
 		},
 		{
 			name: "missing Name",
 			idp: IDP{
-				Url:      "https://example.com",
-				Name:     "",
+				Url: KSVString{
+					Value: "https://example.com",
+				},
+				Name:     KSVString{Value: ""},
 				KnownIDP: Google,
 			},
-			wantErr: []error{errors.ErrMissingIDPName},
+			wantErr: []error{ksverrors.ErrMissingIDPName},
 		},
 		{
 			name: "invalid KnownIDP",
 			idp: IDP{
-				Url:      "https://example.com",
-				Name:     "Example",
-				KnownIDP: "InvalidIDP",
+				Url: KSVString{
+					Value: "https://example.com",
+				},
+				Name:     KSVString{Value: "Example"},
+				KnownIDP: KnownIDP{Value: "InvalidIDP"},
 			},
-			wantErr: []error{errors.ErrInvalidKnownIDP},
+			wantErr: []error{ksverrors.ErrInvalidKnownIDP},
 		},
 	}
 
@@ -86,9 +96,11 @@ func TestKnownIDPValidate(t *testing.T) {
 			wantErr:  nil,
 		},
 		{
-			name:     "invalid KnownIDP",
-			knownIDP: "InvalidIDP",
-			wantErr:  []error{errors.ErrInvalidKnownIDP},
+			name: "invalid KnownIDP",
+			knownIDP: KnownIDP{
+				Value: "InvalidIDP",
+			},
+			wantErr: []error{ksverrors.ErrInvalidKnownIDP},
 		},
 	}
 

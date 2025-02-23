@@ -3,13 +3,13 @@ package types
 import (
 	"encoding/json"
 
-	"github.com/tpyle/ksv/lib/errors"
 	"github.com/tpyle/ksv/lib/generators"
+	"github.com/tpyle/ksv/lib/ksverrors"
 )
 
 type GeneratorReference struct {
-	Ref       KSVString            `json:"ref"`
-	Params    KSVMap               `json:"params"`
+	Ref       *KSVString           `json:"ref"`
+	Params    *KSVMap[*KSVString]  `json:"params"`
 	Generator generators.Generator `json:"-"`
 	Supported bool                 `json:"-"`
 }
@@ -24,8 +24,8 @@ func (gr *GeneratorReference) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	gr.Params = NewKSVMap(aux.Params)
-	gr.Ref = aux.Ref
+	gr.Params = NewKSVMap(aux.Params, NewKSVString)
+	gr.Ref = &aux.Ref
 	gr.Supported, gr.Generator = generators.GetGenerator(gr.Ref.String())
 	return nil
 }
@@ -33,16 +33,16 @@ func (gr *GeneratorReference) UnmarshalJSON(data []byte) error {
 func (gr *GeneratorReference) Get(path string) (Queryable, error) {
 	switch path {
 	case "ref":
-		return &gr.Ref, nil
+		return gr.Ref, nil
 	case "params":
-		return &gr.Params, nil
+		return gr.Params, nil
 	default:
-		return nil, errors.ErrNoSuchPath
+		return nil, ksverrors.ErrNoSuchPath
 	}
 }
 
 func (gr *GeneratorReference) Set(value string) error {
-	return errors.ErrCannotSet
+	return ksverrors.ErrCannotSet
 }
 
 func (gr *GeneratorReference) Validate() []error {
@@ -68,4 +68,8 @@ func (gr *GeneratorReference) GetValues() map[string]string {
 	}
 
 	return ret
+}
+
+func (gr *GeneratorReference) String() string {
+	return gr.Ref.String()
 }

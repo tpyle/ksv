@@ -3,14 +3,21 @@ package types
 import (
 	"strconv"
 
-	"github.com/tpyle/ksv/lib/errors"
+	"github.com/tpyle/ksv/lib/ksverrors"
 )
 
-type KSVBool bool
+var (
+	KSVBoolTrue  = KSVBool{Value: true}
+	KSVBoolFalse = KSVBool{Value: false}
+)
+
+type KSVBool struct {
+	Value bool
+}
 
 func (b *KSVBool) Get(path string) (Queryable, error) {
 	if path != "" {
-		return nil, errors.ErrInvalidPath
+		return nil, ksverrors.ErrInvalidPath
 	}
 	return b, nil
 }
@@ -20,7 +27,7 @@ func (b *KSVBool) Set(value string) error {
 	if err != nil {
 		return err
 	}
-	*b = KSVBool(bval)
+	b.Value = bval
 	return nil
 }
 
@@ -37,5 +44,13 @@ func (b *KSVBool) GetValues() map[string]string {
 }
 
 func (b *KSVBool) String() string {
-	return strconv.FormatBool(bool(*b))
+	return strconv.FormatBool(b.Value)
+}
+
+func (b *KSVBool) ToBool() bool {
+	return b.Value
+}
+
+func NewKSVBool(value bool) *KSVBool {
+	return &KSVBool{Value: value}
 }

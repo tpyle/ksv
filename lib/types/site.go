@@ -1,27 +1,27 @@
 package types
 
 import (
-	"github.com/tpyle/ksv/lib/errors"
+	"github.com/tpyle/ksv/lib/ksverrors"
 )
 
 type Site struct {
-	Url       KSVString `json:"url"`
-	Name      KSVString `json:"name"`
-	AppId     KSVString `json:"appId"`
-	GenericId KSVString `json:"genericId"`
-	Notes     KSVString `json:"notes"`
+	Url       *KSVString `json:"url"`
+	Name      *KSVString `json:"name"`
+	AppId     *KSVString `json:"appId"`
+	GenericId *KSVString `json:"genericId"`
+	Notes     *KSVString `json:"notes"`
 
-	Entries KSVMap `json:"entries"`
+	Entries KSVMap[*Entry] `json:"entries"`
 }
 
 func (s *Site) Validate() []error {
 	var errs []error
-	if s.Url == "" && s.AppId == "" && s.GenericId == "" {
-		errs = append(errs, errors.ErrMissingSiteUrlOrAppIdOrGenericId)
+	if s.Url.IsEmpty() && s.AppId.IsEmpty() && s.GenericId.IsEmpty() {
+		errs = append(errs, ksverrors.ErrMissingSiteUrlOrAppIdOrGenericId)
 	}
 
-	if s.Name == "" {
-		errs = append(errs, errors.ErrMissingSiteName)
+	if s.Name.IsEmpty() {
+		errs = append(errs, ksverrors.ErrMissingSiteName)
 	}
 
 	for _, e := range s.Entries {
@@ -34,26 +34,26 @@ func (s *Site) Validate() []error {
 func (s *Site) Get(path string) (Queryable, error) {
 	switch path {
 	case "url":
-		return &s.Url, nil
+		return s.Url, nil
 	case "name":
-		return &s.Name, nil
+		return s.Name, nil
 	case "appId":
-		return &s.AppId, nil
+		return s.AppId, nil
 	case "genericId":
-		return &s.GenericId, nil
+		return s.GenericId, nil
 	case "notes":
-		return &s.Notes, nil
+		return s.Notes, nil
 	default:
 		if entry, err := s.Entries.Get(path); err == nil {
 			return entry, nil
 		} else {
-			return nil, errors.ErrNoSuchPath
+			return nil, ksverrors.ErrNoSuchPath
 		}
 	}
 }
 
 func (s *Site) Set(value string) error {
-	return errors.ErrCannotSet
+	return ksverrors.ErrCannotSet
 }
 
 func (s *Site) GetChildren() []string {

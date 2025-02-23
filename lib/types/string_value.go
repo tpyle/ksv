@@ -1,18 +1,24 @@
 package types
 
-import "github.com/tpyle/ksv/lib/errors"
+import "github.com/tpyle/ksv/lib/ksverrors"
 
-type KSVString string
+type KSVString struct {
+	Value string
+}
+
+var (
+	KSVStringEmpty = KSVString{Value: ""}
+)
 
 func (s *KSVString) Get(path string) (Queryable, error) {
 	if path != "" {
-		return nil, errors.ErrInvalidPath
+		return nil, ksverrors.ErrInvalidPath
 	}
 	return s, nil
 }
 
 func (s *KSVString) Set(value string) error {
-	*s = KSVString(value)
+	s.Value = value
 	return nil
 }
 
@@ -29,5 +35,13 @@ func (s *KSVString) GetValues() map[string]string {
 }
 
 func (s *KSVString) String() string {
-	return string(*s)
+	return string(s.Value)
+}
+
+func (s *KSVString) IsEmpty() bool {
+	return s == nil || s.Value == ""
+}
+
+func NewKSVString(value string) *KSVString {
+	return &KSVString{Value: value}
 }

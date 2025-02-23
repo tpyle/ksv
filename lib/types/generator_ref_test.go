@@ -5,11 +5,11 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/tpyle/ksv/lib/errors"
+	"github.com/tpyle/ksv/lib/ksverrors"
 )
 
 func TestGeneratorReference_UnmarshalJSON(t *testing.T) {
-	jsonStr := `{"ref": "testRef", "params": {"key": "value"}}`
+	jsonStr := `{"ref": { "value": "testRef" }, "params": {"key": "value"}}`
 	var gr GeneratorReference
 	err := json.Unmarshal([]byte(jsonStr), &gr)
 	assert.NoError(t, err)
@@ -22,11 +22,9 @@ func TestGeneratorReference_UnmarshalJSON(t *testing.T) {
 }
 
 func TestGeneratorReference_Get(t *testing.T) {
-	ref := KSVString("testRef")
-	pval := KSVString("value")
 	gr := &GeneratorReference{
-		Ref:    ref,
-		Params: KSVMap{"key": &pval},
+		Ref:    NewKSVString("testRef"),
+		Params: NewKSVMap(map[string]string{"key": "value"}, NewKSVString),
 	}
 
 	val, err := gr.Get("ref")
@@ -41,14 +39,14 @@ func TestGeneratorReference_Get(t *testing.T) {
 
 	_, err = gr.Get("nonexistent")
 	assert.Error(t, err)
-	assert.Equal(t, errors.ErrNoSuchPath, err)
+	assert.Equal(t, ksverrors.ErrNoSuchPath, err)
 }
 
 func TestGeneratorReference_Set(t *testing.T) {
 	gr := &GeneratorReference{}
 	err := gr.Set("newValue")
 	assert.Error(t, err)
-	assert.Equal(t, errors.ErrCannotSet, err)
+	assert.Equal(t, ksverrors.ErrCannotSet, err)
 }
 
 func TestGeneratorReference_Validate(t *testing.T) {
@@ -58,12 +56,11 @@ func TestGeneratorReference_Validate(t *testing.T) {
 }
 
 func TestGeneratorReference_GetChildren(t *testing.T) {
-	pval := KSVString("value")
 	gr := &GeneratorReference{
-		Ref: KSVString("testRef"),
-		Params: KSVMap{
-			"key": &pval,
-		},
+		Ref: NewKSVString("testRef"),
+		Params: NewKSVMap(map[string]string{
+			"key": "value",
+		}, NewKSVString),
 	}
 
 	children := gr.GetChildren()
@@ -72,12 +69,11 @@ func TestGeneratorReference_GetChildren(t *testing.T) {
 }
 
 func TestGeneratorReference_GetValues(t *testing.T) {
-	pval := KSVString("value")
 	gr := &GeneratorReference{
-		Ref: KSVString("testRef"),
-		Params: KSVMap{
-			"key": &pval,
-		},
+		Ref: NewKSVString("testRef"),
+		Params: NewKSVMap(map[string]string{
+			"key": "value",
+		}, NewKSVString),
 	}
 
 	values := gr.GetValues()

@@ -9,16 +9,17 @@ import (
 )
 
 func TestGeneratorReference_UnmarshalJSON(t *testing.T) {
-	validJSON := `{"ref":"uuid","params":{"length":"10"}}`
-	invalidJSON := `{"ref":"invalid","params":{"length":"10"}}`
+	validJSON := `{"ref":{"value":"uuid"},"params":{"length":"10"}}`
+	invalidJSON := `{"ref":{"value":"invalid"},"params":{"length":"10"}}`
 
 	t.Run("Valid JSON", func(t *testing.T) {
 		var gr types.GeneratorReference
 		err := json.Unmarshal([]byte(validJSON), &gr)
 		assert.NoError(t, err)
-		assert.Equal(t, types.KSVString("uuid"), gr.Ref)
-		lval := types.KSVString("10")
-		assert.Equal(t, types.KSVMap{"length": &lval}, gr.Params)
+		assert.Equal(t, &types.KSVString{
+			Value: "uuid"}, gr.Ref)
+		lval := types.NewKSVString("10")
+		assert.Equal(t, &types.KSVMap[*types.KSVString]{"length": lval}, gr.Params)
 		assert.True(t, gr.Supported)
 		assert.NotNil(t, gr.Generator)
 	})
@@ -27,9 +28,9 @@ func TestGeneratorReference_UnmarshalJSON(t *testing.T) {
 		var gr types.GeneratorReference
 		err := json.Unmarshal([]byte(invalidJSON), &gr)
 		assert.NoError(t, err)
-		assert.Equal(t, types.KSVString("invalid"), gr.Ref)
-		lval := types.KSVString("10")
-		assert.Equal(t, types.KSVMap{"length": &lval}, gr.Params)
+		assert.Equal(t, types.NewKSVString("invalid"), gr.Ref)
+		lval := types.NewKSVString("10")
+		assert.Equal(t, &types.KSVMap[*types.KSVString]{"length": lval}, gr.Params)
 		assert.False(t, gr.Supported)
 		assert.NotNil(t, gr.Generator)
 	})
@@ -44,9 +45,9 @@ func TestSecretField_Validate(t *testing.T) {
 		{
 			name: "valid SecretField",
 			field: types.SecretField{
-				Value: "exampleValue",
-				GeneratorRef: types.GeneratorReference{
-					Ref: "uuid",
+				Value: types.NewKSVString("exampleValue"),
+				GeneratorRef: &types.GeneratorReference{
+					Ref: types.NewKSVString("uuid"),
 				},
 			},
 			wantErr: nil,

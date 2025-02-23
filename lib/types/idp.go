@@ -1,6 +1,6 @@
 package types
 
-import "github.com/tpyle/ksv/lib/errors"
+import "github.com/tpyle/ksv/lib/ksverrors"
 
 type IDP struct {
 	Url      KSVString `json:"url"`
@@ -17,18 +17,18 @@ func (i *IDP) Get(pathElement string) (Queryable, error) {
 	case "knownIDP":
 		return &i.KnownIDP, nil
 	default:
-		return nil, errors.ErrNoSuchPath
+		return nil, ksverrors.ErrNoSuchPath
 	}
 }
 
 func (i *IDP) Validate() []error {
 	var errs []error
-	if i.Url == "" {
-		errs = append(errs, errors.ErrMissingIDPUrl)
+	if i.Url.Value == "" {
+		errs = append(errs, ksverrors.ErrMissingIDPUrl)
 	}
 
-	if i.Name == "" {
-		errs = append(errs, errors.ErrMissingIDPName)
+	if i.Name.Value == "" {
+		errs = append(errs, ksverrors.ErrMissingIDPName)
 	}
 
 	if err := i.KnownIDP.Validate(); err != nil {
@@ -39,7 +39,7 @@ func (i *IDP) Validate() []error {
 }
 
 func (i *IDP) Set(value string) error {
-	return errors.ErrCannotSet
+	return ksverrors.ErrCannotSet
 }
 
 func (i *IDP) GetChildren() []string {
@@ -48,28 +48,36 @@ func (i *IDP) GetChildren() []string {
 
 func (i *IDP) GetValues() map[string]string {
 	return map[string]string{
-		"url":      string(i.Url),
-		"name":     string(i.Name),
-		"knownIDP": string(i.KnownIDP),
+		"url":      i.Url.String(),
+		"name":     i.Name.String(),
+		"knownIDP": i.KnownIDP.String(),
 	}
 }
 
 func (i *IDP) String() string {
-	return string(i.Name)
+	return ""
 }
 
-type KnownIDP string
+type KnownIDP KSVString
 
-const (
-	Google  KnownIDP = "Google"
-	GitHub  KnownIDP = "GitHub"
-	Apple   KnownIDP = "Apple"
-	Generic KnownIDP = "Generic"
+var (
+	Google = KnownIDP{
+		Value: "Google",
+	}
+	GitHub = KnownIDP{
+		Value: "GitHub",
+	}
+	Apple = KnownIDP{
+		Value: "Apple",
+	}
+	Generic = KnownIDP{
+		Value: "Generic",
+	}
 )
 
 func (k *KnownIDP) Get(path string) (Queryable, error) {
 	if len(path) > 0 {
-		return nil, errors.ErrNoSuchPath
+		return nil, ksverrors.ErrNoSuchPath
 	}
 	return k, nil
 }
@@ -85,23 +93,23 @@ func (k *KnownIDP) Set(value string) error {
 	case "Generic":
 		*k = Generic
 	default:
-		return errors.ErrInvalidKnownIDP
+		return ksverrors.ErrInvalidKnownIDP
 	}
 	return nil
 }
 
 func (k *KnownIDP) Validate() []error {
-	switch *k {
-	case Google:
+	switch k.Value {
+	case Google.Value:
 		return nil
-	case GitHub:
+	case GitHub.Value:
 		return nil
-	case Apple:
+	case Apple.Value:
 		return nil
-	case Generic:
+	case Generic.Value:
 		return nil
 	default:
-		return []error{errors.ErrInvalidKnownIDP}
+		return []error{ksverrors.ErrInvalidKnownIDP}
 	}
 }
 
@@ -114,5 +122,5 @@ func (k *KnownIDP) GetValues() map[string]string {
 }
 
 func (k *KnownIDP) String() string {
-	return string(*k)
+	return k.Value
 }

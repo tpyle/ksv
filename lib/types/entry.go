@@ -1,22 +1,22 @@
 package types
 
-import "github.com/tpyle/ksv/lib/errors"
+import "github.com/tpyle/ksv/lib/ksverrors"
 
 type Entry struct {
-	IsIDP    KSVBool   `json:"isIDP"`    // This is true if the entry is an IDP
+	IsIDP    *KSVBool  `json:"isIDP"`    // This is true if the entry is an IDP
 	IDP      IDP       `json:"idp"`      // This is the IDP object if the entry is an IDP
 	Username KSVString `json:"username"` // This is the username for the entry
 	Email    KSVString `json:"email"`    // This is the email for the entry
 	Notes    KSVString `json:"notes"`    // This is the notes for the entry
 
-	CustomFields KSVMap `json:"customFields"`
-	SecretFields KSVMap `json:"secretFields"`
+	CustomFields KSVMap[*KSVString] `json:"customFields"`
+	SecretFields KSVMap[*KSVString] `json:"secretFields"`
 }
 
 func (e *Entry) Get(path string) (Queryable, error) {
 	switch path {
 	case "isIDP":
-		return &e.IsIDP, nil
+		return e.IsIDP, nil
 	case "idp":
 		return &e.IDP, nil
 	case "username":
@@ -31,23 +31,23 @@ func (e *Entry) Get(path string) (Queryable, error) {
 		} else if sf, err := e.SecretFields.Get(path); err == nil {
 			return sf, nil
 		} else {
-			return nil, errors.ErrNoSuchPath
+			return nil, ksverrors.ErrNoSuchPath
 		}
 	}
 }
 
 func (e *Entry) Set(value string) error {
-	return errors.ErrCannotSet
+	return ksverrors.ErrCannotSet
 }
 
 func (e *Entry) Validate() []error {
 	var errs []error
 
 	if e.Username.String() == "" {
-		errs = append(errs, errors.ErrMissingUsername)
+		errs = append(errs, ksverrors.ErrMissingUsername)
 	}
 
-	if e.IsIDP {
+	if e.IsIDP.ToBool() {
 		err := e.IDP.Validate()
 		if len(err) > 0 {
 			errs = append(errs, err...)
