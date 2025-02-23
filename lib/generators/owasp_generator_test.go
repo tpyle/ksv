@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/tpyle/ksv/lib/errors"
+	"github.com/tpyle/ksv/lib/ksverrors"
 )
 
 func TestDecodeOWASPGeneratorParams(t *testing.T) {
@@ -108,13 +108,13 @@ func TestOWASPGenerator_Generate(t *testing.T) {
 	t.Run("zero length", func(t *testing.T) {
 		params := map[string]string{"length": "0"}
 		_, err := generator.Generate(params)
-		assert.ErrorIs(t, err, errors.ErrGeneratorInvalidLength)
+		assert.ErrorIs(t, err, ksverrors.ErrGeneratorInvalidLength)
 	})
 
 	t.Run("missing length", func(t *testing.T) {
 		params := map[string]string{}
 		_, err := generator.Generate(params)
-		assert.ErrorIs(t, err, errors.ErrGeneratorInvalidLength)
+		assert.ErrorIs(t, err, ksverrors.ErrGeneratorInvalidLength)
 	})
 
 	t.Run("valid all params", func(t *testing.T) {
@@ -140,6 +140,6 @@ func TestOWASPGenerator_Generate(t *testing.T) {
 			"min_special":   "2",
 		}
 		_, err := generator.Generate(params)
-		assert.ErrorIs(t, err, errors.ErrGeneratorImpossibleParams)
+		assert.ErrorIs(t, err, ksverrors.ErrGeneratorImpossibleParams)
 	})
 }

@@ -1,14 +1,14 @@
 package generators
 
 import (
-	"github.com/tpyle/ksv/lib/errors"
+	"github.com/tpyle/ksv/lib/ksverrors"
 )
 
 type UnsupportedGenerator struct {
 }
 
 func (n *UnsupportedGenerator) Generate(params map[string]string) (string, error) {
-	return "", errors.ErrUnsupportedGenerator
+	return "", ksverrors.ErrUnsupportedGenerator
 }
 
 func (n *UnsupportedGenerator) GetRef() string {

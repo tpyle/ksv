@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/tpyle/ksv/lib/errors"
+	"github.com/tpyle/ksv/lib/ksverrors"
 )
 
 func TestUnsuportedGenerator_Generate(t *testing.T) {
@@ -13,6 +13,6 @@ func TestUnsuportedGenerator_Generate(t *testing.T) {
 	t.Run("Try Generate Unsupported", func(t *testing.T) {
 		params := map[string]string{}
 		_, err := generator.Generate(params)
-		assert.ErrorIs(t, err, errors.ErrUnsupportedGenerator)
+		assert.ErrorIs(t, err, ksverrors.ErrUnsupportedGenerator)
 	})
 }

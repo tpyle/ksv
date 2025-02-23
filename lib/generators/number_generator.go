@@ -7,7 +7,7 @@ import (
 	"strconv"
 
 	"github.com/go-viper/mapstructure/v2"
-	"github.com/tpyle/ksv/lib/errors"
+	"github.com/tpyle/ksv/lib/ksverrors"
 )
 
 const (
@@ -62,7 +62,7 @@ func (n *NumberGenerator) Generate(params map[string]string) (string, error) {
 	}
 
 	if numberGeneratorParams.Length == 0 {
-		return "", errors.ErrGeneratorInvalidLength
+		return "", ksverrors.ErrGeneratorInvalidLength
 	}
 
 	randReader := rand.Reader

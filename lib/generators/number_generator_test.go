@@ -3,7 +3,7 @@ package generators
 import (
 	"testing"
 
-	"github.com/tpyle/ksv/lib/errors"
+	"github.com/tpyle/ksv/lib/ksverrors"
 )
 
 func TestNumberGenerate(t *testing.T) {
@@ -12,8 +12,8 @@ func TestNumberGenerate(t *testing.T) {
 	t.Run("Length is zero", func(t *testing.T) {
 		params := map[string]string{"length": "0"}
 		_, err := generator.Generate(params)
-		if err != errors.ErrGeneratorInvalidLength {
-			t.Errorf("expected error %v, got %v", errors.ErrGeneratorInvalidLength, err)
+		if err != ksverrors.ErrGeneratorInvalidLength {
+			t.Errorf("expected error %v, got %v", ksverrors.ErrGeneratorInvalidLength, err)
 		}
 	})
 

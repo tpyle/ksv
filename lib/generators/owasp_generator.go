@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	"github.com/go-viper/mapstructure/v2"
-	"github.com/tpyle/ksv/lib/errors"
+	"github.com/tpyle/ksv/lib/ksverrors"
 )
 
 const (
@@ -127,11 +127,11 @@ func (n *OWASPGenerator) Generate(params map[string]string) (string, error) {
 	}
 
 	if owaspGeneratorParams.Length == 0 {
-		return "", errors.ErrGeneratorInvalidLength
+		return "", ksverrors.ErrGeneratorInvalidLength
 	}
 
 	if owaspGeneratorParams.MinLowercase+owaspGeneratorParams.MinUppercase+owaspGeneratorParams.MinNumbers+owaspGeneratorParams.MinSpecial > owaspGeneratorParams.Length {
-		return "", errors.ErrGeneratorImpossibleParams
+		return "", ksverrors.ErrGeneratorImpossibleParams
 	}
 
 	allCharacters := LowercaseCharacters + UppercaseCharacters + owaspGeneratorParams.SpecialChars + NumberCharacters
