@@ -1,4 +1,4 @@
-package errors
+package ksverrors
 
 import "fmt"
 
@@ -18,6 +18,7 @@ var (
 	ErrMissingUsername        = fmt.Errorf("missing parameter: Username is required")
 	ErrMissingCustomFieldName = fmt.Errorf("missing parameter: Custom Field Name is required")
 	ErrMissingSecretFieldName = fmt.Errorf("missing parameter: Secret Field Name is required")
+	ErrEmptyValue             = fmt.Errorf("empty value")
 )
 
 var (
