@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
-	lerrors "errors"
+	"errors"
 
 	"github.com/mitchellh/mapstructure"
 	"github.com/tpyle/ksv/lib/ksverrors"
@@ -43,7 +43,7 @@ func (fs *FileStorage) LoadConfig(config map[string]interface{}) error {
 func (fs *FileStorage) Load() ([]byte, error) {
 	file, err := os.Open(fs.Config.FilePath)
 	if err != nil {
-		if lerrors.Is(err, os.ErrNotExist) {
+		if errors.Is(err, os.ErrNotExist) {
 			return nil, ksverrors.ErrEmptyLocalStorage
 		}
 		return nil, fmt.Errorf("error opening file: %w", err)
