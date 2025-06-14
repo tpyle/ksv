@@ -11,16 +11,20 @@ type LocalStorage interface {
 }
 
 func GetLocalStorage(storageType string, config map[string]interface{}) (LocalStorage, error) {
+	var storage LocalStorage
+	var err error
 	switch storageType {
 	case FileStorageType:
 		var fs FileStorage
-		err := fs.LoadConfig(config)
-		return &fs, err
+		err = fs.LoadConfig(config)
+		storage = &fs
 	case KeyringStorageType:
 		var ks KeyringStorage
-		err := ks.LoadConfig(config)
-		return &ks, err
+		err = ks.LoadConfig(config)
+		storage = &ks
 	default:
-		return nil, ksverrors.ErrUnsupportedLocalStorageType
+		err = ksverrors.ErrUnsupportedLocalStorageType
+		storage = nil
 	}
+	return storage, err
 }

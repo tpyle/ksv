@@ -62,24 +62,9 @@ func (fs *FileStorage) Save(data []byte) error {
 		}
 	}
 
-	if _, err := os.Stat(fs.Config.FilePath); os.IsNotExist(err) {
-		file, err = os.Create(fs.Config.FilePath)
-		if err != nil {
-			return fmt.Errorf("error creating file: %w", err)
-		}
-	} else {
-		file, err = os.Open(fs.Config.FilePath)
-		if err != nil {
-			return fmt.Errorf("error opening file: %w", err)
-		}
-	}
-
-	if _, err := file.Seek(0, 0); err != nil {
-		return fmt.Errorf("error seeking to beginning of file: %w", err)
-	}
-
-	if err := file.Truncate(0); err != nil {
-		return fmt.Errorf("error truncating file: %w", err)
+	file, err := os.Create(fs.Config.FilePath)
+	if err != nil {
+		return fmt.Errorf("error creating file: %w", err)
 	}
 
 	if _, err := file.Write(data); err != nil {

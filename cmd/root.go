@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"context"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -20,6 +19,7 @@ import (
 var (
 	verbosity  int
 	configFile string
+	namespace  string
 )
 
 func getDefaultConfigFile() string {
@@ -54,7 +54,8 @@ var rootCmd = &cobra.Command{
 			logrus.Fatalf("Error loading config: %v", err)
 		}
 
-		cmd.SetContext(util.AttachConfigToContext(config, context.Background()))
+		cmd.SetContext(util.AttachNamespaceToContext(namespace, cmd.Context()))
+		cmd.SetContext(util.AttachConfigToContext(config, cmd.Context()))
 
 		logrus.Tracef("Using Config %+v", util.GetConfigFromContext(cmd.Context()))
 	},

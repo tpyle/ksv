@@ -1,10 +1,7 @@
 package entries
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
-	"github.com/tpyle/ksv/lib/types"
 )
 
 var (
@@ -30,14 +27,5 @@ var addEntryCmd = &cobra.Command{
 	Use:   "add",
 	Short: "Add a new entry",
 	Run: func(cmd *cobra.Command, args []string) {
-		// Logic to add a new entry
-		entry := types.Entry{
-			DistinguishingName: entryName,
-			Username:           entryUsername,
-			Email:              entryEmail,
-			Notes:              entryNotes,
-		}
-		// Add entry to the site (this is a placeholder, actual implementation may vary)
-		fmt.Printf("Entry added: %+v\n", entry)
 	},
 }

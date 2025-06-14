@@ -6,9 +6,11 @@ import (
 	"github.com/tpyle/ksv/lib/cfg"
 )
 
+type KSVConfigKey string
+
 const (
 	// ConfigKey is the key used to store the config in the context
-	ConfigKey = "config"
+	ConfigKey = KSVConfigKey("config")
 )
 
 func AttachConfigToContext(config *cfg.Config, ctx context.Context) context.Context {
