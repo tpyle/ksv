@@ -45,7 +45,8 @@ var DumpCommand = &cobra.Command{
 			logrus.WithError(err).Fatal("Failed to get keystore")
 		}
 
-		if dumpFormat == "table" {
+		switch dumpFormat {
+		case "table":
 			// Print the keystore in a human-readable table format, with formatted columns
 			// Columns are Site (Name), Entry (Username)
 			if ksv.DefaultNamespace.Sites != nil {
@@ -79,21 +80,19 @@ var DumpCommand = &cobra.Command{
 					}
 				}
 			}
-		} else {
-			if dumpFormat == "json" {
-				err := json.NewEncoder(cmd.OutOrStdout()).Encode(ksv)
-				if err != nil {
-					return ksverrors.ErrCliCouldNotEncodeJSON
-				}
-			} else if dumpFormat == "yaml" {
-				bytes, err := yaml.Marshal(ksv)
-				if err != nil {
-					return ksverrors.ErrCliCouldNotEncodeYaml
-				}
-				_, err = cmd.OutOrStdout().Write(bytes)
-				if err != nil {
-					return ksverrors.ErrCliCouldNotWrite
-				}
+		case "json":
+			err := json.NewEncoder(cmd.OutOrStdout()).Encode(ksv)
+			if err != nil {
+				return ksverrors.ErrCliCouldNotEncodeJSON
+			}
+		case "yaml":
+			bytes, err := yaml.Marshal(ksv)
+			if err != nil {
+				return ksverrors.ErrCliCouldNotEncodeYaml
+			}
+			_, err = cmd.OutOrStdout().Write(bytes)
+			if err != nil {
+				return ksverrors.ErrCliCouldNotWrite
 			}
 		}
 		return nil

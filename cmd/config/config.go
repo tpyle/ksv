@@ -58,6 +58,36 @@ var setCommand = &cobra.Command{
 	},
 }
 
+var unsetCommand = &cobra.Command{
+	Use:   "unset [key]",
+	Short: "Unset a configuration key",
+	Args:  cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		key := args[0]
+		viper.Set(key, nil)
+
+		var config cfg.Config
+		err := viper.Unmarshal(&config)
+		if err != nil {
+			logrus.WithError(err).Fatal("Invalid config")
+			return
+		}
+
+		err = config.Validate()
+		if err != nil {
+			logrus.WithError(err).Fatal("Invalid config")
+			return
+		}
+
+		if err := viper.WriteConfig(); err != nil {
+			logrus.WithError(err).Fatal("Error writing config")
+			return
+		}
+
+		fmt.Printf("Unset %s\n", key)
+	},
+}
+
 var getCommand = &cobra.Command{
 	Use:   "get [key]",
 	Short: "Get the value of a configuration key",
@@ -81,5 +111,6 @@ var getCommand = &cobra.Command{
 func init() {
 	ConfigCommand.AddCommand(listCommand)
 	ConfigCommand.AddCommand(setCommand)
+	ConfigCommand.AddCommand(unsetCommand)
 	ConfigCommand.AddCommand(getCommand)
 }
