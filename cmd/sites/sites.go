@@ -2,12 +2,10 @@ package sites
 
 import "github.com/spf13/cobra"
 
-func init() {
-	SitesCommand.AddCommand(addSiteCmd)
-	SitesCommand.AddCommand(rmSiteCmd)
-}
-
 var SitesCommand = &cobra.Command{
-	Use:   "sites",
+	Use: "sites",
+	Aliases: []string{
+		"site",
+	},
 	Short: "Manage sites",
 }

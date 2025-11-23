@@ -8,19 +8,14 @@ import (
 
 func init() {
 	rmSiteCmd.Flags().StringVar(&siteName, "name", "", "Site Name")
+
+	SitesCommand.AddCommand(rmSiteCmd)
 }
 
 var rmSiteCmd = &cobra.Command{
-	Use:   "rm",
+	Use:   "rm [site]",
 	Short: "Remove a site",
-	PreRun: func(cmd *cobra.Command, args []string) {
-		if siteName == "" {
-			logrus.Fatal("Site name must be provided")
-		}
-		if len(args) > 0 {
-			logrus.Fatal("No additional arguments are allowed")
-		}
-	},
+	Args:  cobra.MatchAll(cobra.ExactArgs(1)),
 	Run: func(cmd *cobra.Command, args []string) {
 		ksv, err := util.GetKeystoreFromContext(cmd.Context())
 		if err != nil {
@@ -30,7 +25,12 @@ var rmSiteCmd = &cobra.Command{
 		if ksv.DefaultNamespace.Sites == nil {
 			logrus.Fatal("No sites found in the keystore")
 		}
+
+		siteName := args[0]
+
 		if _, ok := ksv.DefaultNamespace.Sites[siteName]; ok {
+			// TODO: Prompt for correctness
+
 			delete(ksv.DefaultNamespace.Sites, siteName)
 		} else {
 			logrus.Fatalf("Site with name %s does not exist", siteName)

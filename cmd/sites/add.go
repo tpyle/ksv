@@ -21,6 +21,8 @@ func init() {
 	addSiteCmd.Flags().StringVar(&siteAppId, "appId", "", "Site App ID")
 	addSiteCmd.Flags().StringVar(&siteGenericId, "genericId", "", "Site Generic ID")
 	addSiteCmd.Flags().StringVar(&siteNotes, "notes", "", "Site Notes")
+
+	SitesCommand.AddCommand(addSiteCmd)
 }
 
 var addSiteCmd = &cobra.Command{
