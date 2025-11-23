@@ -6,9 +6,7 @@ import (
 )
 
 func main() {
-	logrus.SetFormatter(&logrus.TextFormatter{
-		FullTimestamp: true,
-	})
+	logrus.SetFormatter(&logrus.TextFormatter{})
 	logrus.SetLevel(logrus.TraceLevel)
 
 	cmd.Execute()

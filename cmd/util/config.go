@@ -20,6 +20,7 @@ func AttachConfigToContext(config *cfg.Config, ctx context.Context) context.Cont
 func GetConfigFromContext(ctx context.Context) *cfg.Config {
 	config, ok := ctx.Value(ConfigKey).(*cfg.Config)
 	if !ok {
+		// This should never be called
 		panic("config not found in context")
 	}
 

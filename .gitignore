@@ -1,0 +1,6 @@
+# Binary
+/ksv
+/bin
+
+# Vim Swap files
+*.swp
