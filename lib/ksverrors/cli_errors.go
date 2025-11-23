@@ -1,19 +1,21 @@
 package ksverrors
 
-import "fmt"
-
-var (
-	ErrCliNoMoreArgs           = fmt.Errorf("no additional arguments are allowed")
-	ErrCliFailedToGetKeystore  = fmt.Errorf("failed to get keystore from context")
-	ErrCliFailedToSaveKeystore = fmt.Errorf("failed to save keystore to context")
+import (
+	"errors"
 )
 
 var (
-	ErrCliSiteDoesNotExist = fmt.Errorf("site does not exist")
+	ErrCliNoMoreArgs           = errors.New("no additional arguments are allowed")
+	ErrCliFailedToGetKeystore  = errors.New("failed to get keystore from context")
+	ErrCliFailedToSaveKeystore = errors.New("failed to save keystore to context")
 )
 
 var (
-	ErrCliCouldNotEncodeYaml = fmt.Errorf("could not encode YAML")
-	ErrCliCouldNotEncodeJSON = fmt.Errorf("could not encode JSON")
-	ErrCliCouldNotWrite      = fmt.Errorf("could not write output")
+	ErrCliSiteDoesNotExist = errors.New("site does not exist")
+)
+
+var (
+	ErrCliCouldNotEncodeYaml = errors.New("could not encode YAML")
+	ErrCliCouldNotEncodeJSON = errors.New("could not encode JSON")
+	ErrCliCouldNotWrite      = errors.New("could not write output")
 )

@@ -1,46 +1,46 @@
 package ksverrors
 
-import "fmt"
+import "errors"
 
 var (
-	ErrGeneratorInvalidLength    = fmt.Errorf("invalid length")
-	ErrGeneratorImpossibleParams = fmt.Errorf("impossible parameters")
-	ErrUnsupportedGenerator      = fmt.Errorf("unsupported generator")
+	ErrGeneratorInvalidLength    = errors.New("invalid length")
+	ErrGeneratorImpossibleParams = errors.New("impossible parameters")
+	ErrUnsupportedGenerator      = errors.New("unsupported generator")
 )
 
 var (
-	ErrMissingIDPUrl   = fmt.Errorf("missing parameter: IDP URL is required")
-	ErrMissingIDPName  = fmt.Errorf("missing parameter: IDP Name is required")
-	ErrInvalidKnownIDP = fmt.Errorf("invalid KnownIDP")
+	ErrMissingIDPUrl   = errors.New("missing parameter: IDP URL is required")
+	ErrMissingIDPName  = errors.New("missing parameter: IDP Name is required")
+	ErrInvalidKnownIDP = errors.New("invalid KnownIDP")
 )
 
 var (
-	ErrMissingUsername        = fmt.Errorf("missing parameter: Username is required")
-	ErrMissingCustomFieldName = fmt.Errorf("missing parameter: Custom Field Name is required")
-	ErrMissingSecretFieldName = fmt.Errorf("missing parameter: Secret Field Name is required")
-	ErrEmptyValue             = fmt.Errorf("empty value")
+	ErrMissingUsername        = errors.New("missing parameter: Username is required")
+	ErrMissingCustomFieldName = errors.New("missing parameter: Custom Field Name is required")
+	ErrMissingSecretFieldName = errors.New("missing parameter: Secret Field Name is required")
+	ErrEmptyValue             = errors.New("empty value")
 )
 
 var (
-	ErrEmptyPathElement = fmt.Errorf("empty path element")
+	ErrEmptyPathElement = errors.New("empty path element")
 )
 
 var (
-	ErrMissingSiteUrlOrAppIdOrGenericId = fmt.Errorf("missing parameter: site must have URL, AppId, or GenericId")
-	ErrMissingSiteName                  = fmt.Errorf("missing parameter: Site Name is required")
+	ErrMissingSiteUrlOrAppIdOrGenericId = errors.New("missing parameter: site must have URL, AppId, or GenericId")
+	ErrMissingSiteName                  = errors.New("missing parameter: Site Name is required")
 )
 
 var (
-	ErrEmptyLocalStorage           = fmt.Errorf("local storage is empty")
-	ErrUnsupportedLocalStorageType = fmt.Errorf("unsupported local storage type")
+	ErrEmptyLocalStorage           = errors.New("local storage is empty")
+	ErrUnsupportedLocalStorageType = errors.New("unsupported local storage type")
 )
 
 var (
-	ErrInvalidPath = fmt.Errorf("invalid path")
-	ErrNoSuchPath  = fmt.Errorf("no such path")
-	ErrCannotSet   = fmt.Errorf("cannot set this value")
+	ErrInvalidPath = errors.New("invalid path")
+	ErrNoSuchPath  = errors.New("no such path")
+	ErrCannotSet   = errors.New("cannot set this value")
 )
 
 var (
-	ErrClipboardUnavailable = fmt.Errorf("clipboard unavailable")
+	ErrClipboardUnavailable = errors.New("clipboard unavailable")
 )
