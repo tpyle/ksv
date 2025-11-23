@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/mitchellh/mapstructure"
+	"github.com/go-viper/mapstructure/v2"
 	"github.com/sirupsen/logrus"
 	"github.com/tpyle/ksv/lib/ksverrors"
 	"github.com/zalando/go-keyring"
