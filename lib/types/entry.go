@@ -3,14 +3,40 @@ package types
 import "github.com/tpyle/ksv/lib/ksverrors"
 
 type Entry struct {
-	IsIDP    *KSVBool  `json:"isIDP"`    // This is true if the entry is an IDP
-	IDP      IDP       `json:"idp"`      // This is the IDP object if the entry is an IDP
-	Username KSVString `json:"username"` // This is the username for the entry
-	Email    KSVString `json:"email"`    // This is the email for the entry
-	Notes    KSVString `json:"notes"`    // This is the notes for the entry
+	IsIDP    *KSVBool   `json:"isIDP"`    // This is true if the entry is an IDP
+	IDP      *IDP       `json:"idp"`      // This is the IDP object if the entry is an IDP
+	Username *KSVString `json:"username"` // This is the username for the entry
+	Email    *KSVString `json:"email"`    // This is the email for the entry
+	Notes    *KSVString `json:"notes"`    // This is the notes for the entry
 
 	CustomFields KSVMap[*KSVString] `json:"customFields"`
 	SecretFields KSVMap[*KSVString] `json:"secretFields"`
+}
+
+func NewEntry(Username string, Email string, Notes string, IsIDP bool, Idp IDP) *Entry {
+	return &Entry{
+		IsIDP:        NewKSVBool(IsIDP),
+		IDP:          &Idp,
+		Username:     NewKSVString(Username),
+		Email:        NewKSVString(Email),
+		Notes:        NewKSVString(Notes),
+		CustomFields: KSVMap[*KSVString]{},
+		SecretFields: KSVMap[*KSVString]{},
+	}
+}
+
+func (e *Entry) AddCustomField(key string, value string) {
+	if e.CustomFields == nil {
+		e.CustomFields = KSVMap[*KSVString]{}
+	}
+	e.CustomFields[key] = NewKSVString(value)
+}
+
+func (e *Entry) AddSecretField(key string, value string) {
+	if e.SecretFields == nil {
+		e.SecretFields = KSVMap[*KSVString]{}
+	}
+	e.SecretFields[key] = NewKSVString(value)
 }
 
 func (e *Entry) Get(path string) (Queryable, error) {
@@ -18,13 +44,13 @@ func (e *Entry) Get(path string) (Queryable, error) {
 	case "isIDP":
 		return e.IsIDP, nil
 	case "idp":
-		return &e.IDP, nil
+		return e.IDP, nil
 	case "username":
-		return &e.Username, nil
+		return e.Username, nil
 	case "email":
-		return &e.Email, nil
+		return e.Email, nil
 	case "notes":
-		return &e.Notes, nil
+		return e.Notes, nil
 	default:
 		if cf, err := e.CustomFields.Get(path); err == nil {
 			return cf, nil

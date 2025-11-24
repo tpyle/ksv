@@ -11,6 +11,7 @@ var (
 	entryUsername      string
 	entryEmail         string
 	entryNotes         string
+	entryIsIdp         bool
 	customFields       []string
 	secretFields       []string
 	promptSecretFields bool
@@ -24,6 +25,7 @@ func init() {
 	addEntryCmd.Flags().StringVar(&entryUsername, "username", "", "Entry Username")
 	addEntryCmd.Flags().StringVar(&entryEmail, "email", "", "Entry Email")
 	addEntryCmd.Flags().StringVar(&entryNotes, "notes", "", "Entry Notes")
+	addEntryCmd.Flags().BoolVar(&entryIsIdp, "idp", false, "Mark entry as an Identity Provider (IdP)")
 	addEntryCmd.Flags().StringArrayVar(&customFields, "custom", []string{}, "Custom fields in the format key=value")
 	addEntryCmd.Flags().StringArrayVar(&secretFields, "secret", []string{}, "Secret fields in the format key=value")
 	addEntryCmd.Flags().BoolVar(&promptSecretFields, "prompt-secret", false, "Prompt for secret fields interactively")
