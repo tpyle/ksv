@@ -64,6 +64,7 @@ var rootCmd = &cobra.Command{
 func init() {
 	rootCmd.PersistentFlags().CountVarP(&verbosity, "verbose", "v", "Set the verbosity level")
 	rootCmd.PersistentFlags().StringVarP(&configFile, "config-file", "c", getDefaultConfigFile(), "Path to the config file")
+	rootCmd.PersistentFlags().StringVarP(&namespace, "namespace", "n", "default", "Namespace to use")
 
 	rootCmd.AddCommand(sites.SitesCommand)
 	rootCmd.AddCommand(search.SearchCommand)

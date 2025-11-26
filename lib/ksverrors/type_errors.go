@@ -44,3 +44,7 @@ var (
 var (
 	ErrClipboardUnavailable = errors.New("clipboard unavailable")
 )
+
+var (
+	ErrEntryAlreadyExists = errors.New("entry already exists")
+)

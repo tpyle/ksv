@@ -12,6 +12,7 @@ var (
 
 var (
 	ErrCliSiteDoesNotExist = errors.New("site does not exist")
+	ErrCliIDPDoesNotExist  = errors.New("IDP does not exist")
 )
 
 var (

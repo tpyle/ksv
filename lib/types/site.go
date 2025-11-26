@@ -1,6 +1,8 @@
 package types
 
 import (
+	"fmt"
+
 	"github.com/tpyle/ksv/lib/ksverrors"
 )
 
@@ -12,6 +14,28 @@ type Site struct {
 	Notes     *KSVString `json:"notes"`
 
 	Entries KSVMap[*Entry] `json:"entries"`
+}
+
+func NewSite(url, name, appId, genericId, notes string) Site {
+	return Site{
+		Url:       NewKSVString(url),
+		Name:      NewKSVString(name),
+		AppId:     NewKSVString(appId),
+		GenericId: NewKSVString(genericId),
+		Notes:     NewKSVString(notes),
+		Entries:   make(KSVMap[*Entry]),
+	}
+}
+
+func (s *Site) AddEntry(name string, entry *Entry) error {
+	if s.Entries == nil {
+		s.Entries = make(KSVMap[*Entry])
+	}
+	if _, exists := s.Entries[name]; exists {
+		return fmt.Errorf("%w: %s", ksverrors.ErrEntryAlreadyExists, name)
+	}
+	s.Entries[name] = entry
+	return nil
 }
 
 func (s *Site) Validate() []error {

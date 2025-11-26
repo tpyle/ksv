@@ -4,7 +4,8 @@ import "github.com/tpyle/ksv/lib/ksverrors"
 
 type Entry struct {
 	IsIDP    *KSVBool   `json:"isIDP"`    // This is true if the entry is an IDP
-	IDP      *IDP       `json:"idp"`      // This is the IDP object if the entry is an IDP
+	IDPName  string     `json:"idpName"`  // This is the name of the IDP if the entry is an IDP
+	IDP      *IDP       `json:"-"`        // This is the IDP object if the entry is an IDP
 	Username *KSVString `json:"username"` // This is the username for the entry
 	Email    *KSVString `json:"email"`    // This is the email for the entry
 	Notes    *KSVString `json:"notes"`    // This is the notes for the entry
@@ -13,10 +14,10 @@ type Entry struct {
 	SecretFields KSVMap[*KSVString] `json:"secretFields"`
 }
 
-func NewEntry(Username string, Email string, Notes string, IsIDP bool, Idp IDP) *Entry {
+func NewEntry(Username string, Email string, Notes string, IsIDP bool, IdpName string) *Entry {
 	return &Entry{
 		IsIDP:        NewKSVBool(IsIDP),
-		IDP:          &Idp,
+		IDPName:      IdpName,
 		Username:     NewKSVString(Username),
 		Email:        NewKSVString(Email),
 		Notes:        NewKSVString(Notes),

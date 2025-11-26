@@ -4,6 +4,33 @@ import "github.com/tpyle/ksv/lib/ksverrors"
 
 type Namespace struct {
 	Sites KSVMap[*Site] `json:"sites"`
+	IDPs  KSVMap[*IDP]  `json:"idps"`
+}
+
+func NewNamespace() Namespace {
+	return Namespace{
+		Sites: make(KSVMap[*Site]),
+		IDPs:  make(KSVMap[*IDP]),
+	}
+}
+
+func (n *Namespace) AddSite(site Site) {
+	if n.Sites == nil {
+		n.Sites = make(KSVMap[*Site])
+	}
+	n.Sites[site.Name.Value] = &site
+}
+
+func (n *Namespace) AddIDP(idp IDP) {
+	if n.IDPs == nil {
+		n.IDPs = make(KSVMap[*IDP])
+	}
+	n.IDPs[idp.Name.Value] = &idp
+}
+
+func (n *Namespace) GetIDPByName(name string) (*IDP, bool) {
+	idp, ok := n.IDPs[name]
+	return idp, ok
 }
 
 func (n *Namespace) Validate() []error {
