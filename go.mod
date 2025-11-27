@@ -11,6 +11,7 @@ require (
 	github.com/stretchr/testify v1.11.1
 	github.com/zalando/go-keyring v0.2.6
 	golang.design/x/clipboard v0.7.1
+	golang.org/x/term v0.37.0
 	sigs.k8s.io/yaml v1.6.0
 )
 

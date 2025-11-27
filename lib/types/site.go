@@ -38,6 +38,11 @@ func (s *Site) AddEntry(name string, entry *Entry) error {
 	return nil
 }
 
+func (s *Site) HasEntry(name string) bool {
+	_, exists := s.Entries[name]
+	return exists
+}
+
 func (s *Site) Validate() []error {
 	var errs []error
 	if s.Url.IsEmpty() && s.AppId.IsEmpty() && s.GenericId.IsEmpty() {
