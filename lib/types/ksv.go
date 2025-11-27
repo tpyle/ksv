@@ -3,6 +3,11 @@ package types
 import (
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
+	"io"
+
+	"github.com/tpyle/ksv/lib/enc"
+	"github.com/tpyle/ksv/lib/ksverrors"
 )
 
 type KSV struct {
@@ -10,6 +15,48 @@ type KSV struct {
 
 	// Default Namespace
 	DefaultNamespace Namespace `json:"default_namespace"`
+}
+
+func DecryptKSV(input io.Reader, key []byte) (*KSV, error) {
+	var ksv KSV
+	err := enc.DecryptAndUnmarshal(input, key, &ksv)
+	if err != nil {
+		return nil, err
+	}
+	return &ksv, nil
+}
+
+func (k *KSV) Encrypt(output io.Writer, key []byte) error {
+	return enc.MarshalAndEncrypt(k, key, output)
+}
+
+func (k *KSV) GetNamespace(name string) ([]byte, bool) {
+	namespace, ok := k.Namespaces[name]
+	return namespace, ok
+}
+
+func (k *KSV) HasNamespace(name string) bool {
+	_, ok := k.Namespaces[name]
+	return ok
+}
+
+func (k *KSV) AddNamespace(name string, namespace []byte) {
+	if k.Namespaces == nil {
+		k.Namespaces = make(map[string][]byte)
+	}
+	k.Namespaces[name] = namespace
+}
+
+func (k *KSV) RemoveNamespace(name string) {
+	delete(k.Namespaces, name)
+}
+
+func (k *KSV) ReplaceNamespace(name string, namespace []byte) error {
+	if !k.HasNamespace(name) {
+		return fmt.Errorf("%w: %s", ksverrors.ErrNoSuchNamespace, name)
+	}
+	k.Namespaces[name] = namespace
+	return nil
 }
 
 func (k *KSV) UnmarshalJSON(data []byte) error {

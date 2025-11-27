@@ -1,10 +1,28 @@
 package types
 
-import "github.com/tpyle/ksv/lib/ksverrors"
+import (
+	"io"
+
+	"github.com/tpyle/ksv/lib/enc"
+	"github.com/tpyle/ksv/lib/ksverrors"
+)
 
 type Namespace struct {
 	Sites KSVMap[*Site] `json:"sites"`
 	IDPs  KSVMap[*IDP]  `json:"idps"`
+}
+
+func DecryptNamespace(input io.Reader, key []byte) (*Namespace, error) {
+	var ns Namespace
+	err := enc.DecryptAndUnmarshal(input, key, &ns)
+	if err != nil {
+		return nil, err
+	}
+	return &ns, nil
+}
+
+func (n *Namespace) Encrypt(output io.Writer, key []byte) error {
+	return enc.MarshalAndEncrypt(n, key, output)
 }
 
 func NewNamespace() Namespace {

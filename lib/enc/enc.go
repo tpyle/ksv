@@ -1,10 +1,12 @@
 package enc
 
 import (
+	"bytes"
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
 	"crypto/sha256"
+	"encoding/json"
 	"errors"
 	"io"
 )
@@ -102,4 +104,20 @@ func Decrypt(input io.Reader, key []byte, output io.Writer) error {
 	}
 
 	return nil
+}
+
+func DecryptAndUnmarshal(input io.Reader, key []byte, v interface{}) error {
+	var decrypted bytes.Buffer
+	if err := Decrypt(input, key, &decrypted); err != nil {
+		return err
+	}
+	return json.Unmarshal(decrypted.Bytes(), v)
+}
+
+func MarshalAndEncrypt(v interface{}, key []byte, output io.Writer) error {
+	data, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	return Encrypt(bytes.NewReader(data), key, output)
 }

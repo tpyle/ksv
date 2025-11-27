@@ -51,4 +51,6 @@ var (
 	ErrSiteAlreadyExists  = errors.New("site already exists")
 	ErrSiteDoesNotExist   = errors.New("site does not exist")
 	ErrIDPAlreadyExists   = errors.New("IDP already exists")
+
+	ErrNoSuchNamespace = errors.New("no such namespace")
 )
