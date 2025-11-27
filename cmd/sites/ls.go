@@ -13,7 +13,10 @@ func init() {
 }
 
 var lsSiteCmd = &cobra.Command{
-	Use:   "ls",
+	Use: "list",
+	Aliases: []string{
+		"ls",
+	},
 	Short: "List all sites",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) > 0 {

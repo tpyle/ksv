@@ -38,6 +38,18 @@ func (s *Site) AddEntry(name string, entry *Entry) error {
 	return nil
 }
 
+func (s *Site) RemoveEntry(name string) error {
+	if s.Entries == nil {
+		return fmt.Errorf("%w: %s", ksverrors.ErrEntryDoesNotExist, name)
+	}
+	if _, exists := s.Entries[name]; !exists {
+		return fmt.Errorf("%w: %s", ksverrors.ErrEntryDoesNotExist, name)
+	}
+
+	delete(s.Entries, name)
+	return nil
+}
+
 func (s *Site) HasEntry(name string) bool {
 	_, exists := s.Entries[name]
 	return exists

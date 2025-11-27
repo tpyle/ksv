@@ -47,6 +47,8 @@ var (
 
 var (
 	ErrEntryAlreadyExists = errors.New("entry already exists")
+	ErrEntryDoesNotExist  = errors.New("entry does not exist")
 	ErrSiteAlreadyExists  = errors.New("site already exists")
+	ErrSiteDoesNotExist   = errors.New("site does not exist")
 	ErrIDPAlreadyExists   = errors.New("IDP already exists")
 )
