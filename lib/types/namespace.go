@@ -14,11 +14,15 @@ func NewNamespace() Namespace {
 	}
 }
 
-func (n *Namespace) AddSite(site Site) {
+func (n *Namespace) AddSite(site Site) error {
 	if n.Sites == nil {
 		n.Sites = make(KSVMap[*Site])
 	}
+	if _, ok := n.Sites[site.Name.Value]; ok {
+		return ksverrors.ErrSiteAlreadyExists
+	}
 	n.Sites[site.Name.Value] = &site
+	return nil
 }
 
 func (n *Namespace) AddIDP(idp IDP) {

@@ -22,34 +22,24 @@ var (
 func init() {
 	EntriesCommand.AddCommand(addEntryCmd)
 
-	addEntryCmd.Flags().StringVarP(&siteName, "site", "s", "", "Site Name")
-	addEntryCmd.Flags().StringVar(&entryName, "name", "", "Entry Name")
-	addEntryCmd.Flags().StringVar(&entryUsername, "username", "", "Entry Username")
-	addEntryCmd.Flags().StringVar(&entryEmail, "email", "", "Entry Email")
-	addEntryCmd.Flags().StringVar(&entryNotes, "notes", "", "Entry Notes")
+	addEntryCmd.Flags().StringVarP(&siteName, "site-name", "s", "", "Site Name")
+	addEntryCmd.Flags().StringVarP(&entryName, "entry-name", "e", "", "Entry Name")
+	addEntryCmd.Flags().StringVarP(&entryUsername, "username", "u", "", "Entry Username")
+	addEntryCmd.Flags().StringVarP(&entryEmail, "email", "m", "", "Entry Email")
+	addEntryCmd.Flags().StringVarP(&entryNotes, "notes", "o", "", "Entry Notes")
 	addEntryCmd.Flags().StringVar(&entryIdp, "idp", "", "Identity Provider (IdP) name")
 	addEntryCmd.Flags().StringArrayVar(&customFields, "custom", []string{}, "Custom fields in the format key=value")
 	addEntryCmd.Flags().StringArrayVar(&secretFields, "secret", []string{}, "Secret fields in the format key=value")
 	addEntryCmd.Flags().BoolVar(&promptSecretFields, "prompt-secret", false, "Prompt for secret fields interactively")
+	addEntryCmd.MarkFlagsMutuallyExclusive("secret", "prompt-secret")
+	addEntryCmd.MarkFlagRequired("site-name")
+	addEntryCmd.MarkFlagRequired("entry-name")
+	addEntryCmd.MarkFlagsOneRequired("username", "email", "custom", "secret", "prompt-secret")
 }
 
 var addEntryCmd = &cobra.Command{
 	Use:   "add",
 	Short: "Add a new entry",
-	PreRun: func(cmd *cobra.Command, args []string) {
-		if siteName == "" {
-			logrus.Fatal("Site name is required")
-		}
-		if entryName == "" {
-			logrus.Fatal("Entry name is required")
-		}
-		if entryUsername == "" && entryEmail == "" && entryNotes == "" && len(customFields) == 0 && len(secretFields) == 0 {
-			logrus.Fatal("At least one field (username, email, notes, custom fields, or secret fields) must be provided")
-		}
-		if promptSecretFields && len(secretFields) > 0 {
-			logrus.Fatal("Cannot use --prompt-secret with --secret fields")
-		}
-	},
 	Run: func(cmd *cobra.Command, args []string) {
 		ksv, err := util.GetKeystoreFromContext(cmd.Context())
 		if err != nil {

@@ -16,26 +16,22 @@ var (
 )
 
 func init() {
-	addSiteCmd.Flags().StringVar(&siteUrl, "url", "", "Site URL")
-	addSiteCmd.Flags().StringVar(&siteName, "name", "", "Site Name")
-	addSiteCmd.Flags().StringVar(&siteAppId, "appId", "", "Site App ID")
-	addSiteCmd.Flags().StringVar(&siteGenericId, "genericId", "", "Site Generic ID")
-	addSiteCmd.Flags().StringVar(&siteNotes, "notes", "", "Site Notes")
-
 	SitesCommand.AddCommand(addSiteCmd)
+
+	addSiteCmd.Flags().StringVarP(&siteUrl, "url", "u", "", "Site URL")
+	addSiteCmd.Flags().StringVarP(&siteName, "name", "s", "", "Site Name")
+	addSiteCmd.Flags().StringVarP(&siteAppId, "appId", "a", "", "Site App ID")
+	addSiteCmd.Flags().StringVarP(&siteGenericId, "genericId", "g", "", "Site Generic ID")
+	addSiteCmd.Flags().StringVarP(&siteNotes, "notes", "o", "", "Site Notes")
+	addSiteCmd.MarkFlagRequired("name")
+	addSiteCmd.MarkFlagsOneRequired("url", "appId", "genericId")
 }
 
 var addSiteCmd = &cobra.Command{
 	Use:   "add",
 	Short: "Add a new site",
 	Run: func(cmd *cobra.Command, args []string) {
-		site := types.Site{
-			Url:       types.NewKSVString(siteUrl),
-			Name:      types.NewKSVString(siteName),
-			AppId:     types.NewKSVString(siteAppId),
-			GenericId: types.NewKSVString(siteGenericId),
-			Notes:     types.NewKSVString(siteNotes),
-		}
+		site := types.NewSite(siteUrl, siteName, siteAppId, siteGenericId, siteNotes)
 		if errs := site.Validate(); len(errs) > 0 {
 			logrus.Errorf("Validation failed")
 			for _, err := range errs {
@@ -49,14 +45,10 @@ var addSiteCmd = &cobra.Command{
 			logrus.WithError(err).Fatal("Failed to get keystore")
 		}
 
-		if ksv.DefaultNamespace.Sites == nil {
-			ksv.DefaultNamespace.Sites = make(types.KSVMap[*types.Site])
+		err = ksv.DefaultNamespace.AddSite(site)
+		if err != nil {
+			logrus.WithError(err).Fatal("Failed to add site")
 		}
-		if _, ok := ksv.DefaultNamespace.Sites[siteName]; ok {
-			logrus.Fatalf("Site with name %s already exists", siteName)
-		}
-
-		ksv.DefaultNamespace.Sites[siteName] = &site
 
 		err = util.SaveKeystoreFromContext(cmd.Context(), ksv)
 		if err != nil {
