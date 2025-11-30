@@ -5,6 +5,7 @@ import (
 )
 
 type UnsupportedGenerator struct {
+	Ref string
 }
 
 func (n *UnsupportedGenerator) Generate(params map[string]string) (string, error) {
@@ -12,7 +13,7 @@ func (n *UnsupportedGenerator) Generate(params map[string]string) (string, error
 }
 
 func (n *UnsupportedGenerator) GetRef() string {
-	return "unsupported"
+	return n.Ref
 }
 
 func (n *UnsupportedGenerator) GetDefaultParams() map[string]string {

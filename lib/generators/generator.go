@@ -15,6 +15,6 @@ func GetGenerator(ref string) (bool, Generator) {
 	case "uuid":
 		return true, &UUIDGenerator{}
 	default:
-		return false, &UnsupportedGenerator{}
+		return false, &UnsupportedGenerator{Ref: ref}
 	}
 }
