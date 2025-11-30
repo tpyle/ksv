@@ -12,8 +12,8 @@ func TestPrefixList(t *testing.T) {
 		list   []string
 		expect []string
 	}{
-		{"/prefix", []string{"a", "b", "c"}, []string{"/prefix/a", "/prefix/b", "/prefix/c"}},
-		{"/prefix", []string{""}, []string{"/prefix"}},
+		{">prefix", []string{"a", "b", "c"}, []string{">prefix>a", ">prefix>b", ">prefix>c"}},
+		{">prefix", []string{""}, []string{">prefix"}},
 	}
 	for _, c := range cases {
 		result := PrefixList(c.prefix, c.list)
@@ -27,8 +27,8 @@ func TestPrefixMap(t *testing.T) {
 		m      map[string]string
 		expect map[string]string
 	}{
-		{"/prefix", map[string]string{"a": "1", "b": "2"}, map[string]string{"/prefix/a": "1", "/prefix/b": "2"}},
-		{"/prefix", map[string]string{"": "1"}, map[string]string{"/prefix": "1"}},
+		{">prefix", map[string]string{"a": "1", "b": "2"}, map[string]string{">prefix>a": "1", ">prefix>b": "2"}},
+		{">prefix", map[string]string{"": "1"}, map[string]string{">prefix": "1"}},
 	}
 	for _, c := range cases {
 		result := PrefixMap(c.prefix, c.m)
@@ -42,7 +42,7 @@ func TestUnprefixMap(t *testing.T) {
 		m      map[string]string
 		expect map[string]string
 	}{
-		{"/prefix", map[string]string{"/prefix/a": "1", "/prefix/b": "2"}, map[string]string{"a": "1", "b": "2"}},
+		{">prefix", map[string]string{">prefix/a": "1", ">prefix/b": "2"}, map[string]string{"a": "1", "b": "2"}},
 	}
 	for _, c := range cases {
 		result := UnprefixMap(c.prefix, c.m)
@@ -55,8 +55,8 @@ func TestSplitPath(t *testing.T) {
 		path   string
 		expect []string
 	}{
-		{"/a/b/c", []string{"", "a", "b", "c"}},
-		{"a/b/c", []string{"a", "b", "c"}},
+		{">a>b>c", []string{"", "a", "b", "c"}},
+		{"a>b>c", []string{"a", "b", "c"}},
 	}
 	for _, c := range cases {
 		result := SplitPath(c.path)

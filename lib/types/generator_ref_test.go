@@ -65,7 +65,7 @@ func TestGeneratorReference_GetChildren(t *testing.T) {
 
 	children := gr.GetChildren()
 	assert.Contains(t, children, "ref")
-	assert.Contains(t, children, "params/key")
+	assert.Contains(t, children, "params>key")
 }
 
 func TestGeneratorReference_GetValues(t *testing.T) {
@@ -78,5 +78,5 @@ func TestGeneratorReference_GetValues(t *testing.T) {
 
 	values := gr.GetValues()
 	assert.Equal(t, "testRef", values["ref"])
-	assert.Equal(t, "value", values["params/key"])
+	assert.Equal(t, "value", values["params>key"])
 }

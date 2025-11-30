@@ -6,7 +6,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-const separator = "/"
+const separator = ">"
 
 func PrefixList(prefix string, l []string) []string {
 	prefixed := make([]string, len(l))

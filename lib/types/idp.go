@@ -1,6 +1,8 @@
 package types
 
-import "github.com/tpyle/ksv/lib/ksverrors"
+import (
+	"github.com/tpyle/ksv/lib/ksverrors"
+)
 
 type IDP struct {
 	Url      KSVString `json:"url"`
@@ -47,6 +49,9 @@ func (i *IDP) GetChildren() []string {
 }
 
 func (i *IDP) GetValues() map[string]string {
+	if i == nil {
+		return nil
+	}
 	return map[string]string{
 		"url":      i.Url.String(),
 		"name":     i.Name.String(),

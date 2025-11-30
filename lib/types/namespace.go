@@ -85,8 +85,8 @@ func (n *Namespace) GetChildren() []string {
 func (n *Namespace) GetValues() map[string]string {
 	values := make(map[string]string)
 	for key, site := range n.Sites {
-		for k, v := range site.GetValues() {
-			values[key+"."+k] = v
+		for k, v := range PrefixMap(key, site.GetValues()) {
+			values[k] = v
 		}
 	}
 	return values
