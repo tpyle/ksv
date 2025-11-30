@@ -52,6 +52,18 @@ func (fs *FileStorage) Load() ([]byte, error) {
 	return io.ReadAll(file)
 }
 
+func (fs *FileStorage) LoadReader() (io.Reader, error) {
+	file, err := os.Open(fs.Config.FilePath)
+	if err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			return nil, ksverrors.ErrEmptyLocalStorage
+		}
+		return nil, fmt.Errorf("error opening file: %w", err)
+	}
+
+	return file, nil
+}
+
 func (fs *FileStorage) Save(data []byte) error {
 	var file *os.File
 
@@ -68,6 +80,20 @@ func (fs *FileStorage) Save(data []byte) error {
 	}
 
 	if _, err := file.Write(data); err != nil {
+		return fmt.Errorf("error writing to file: %w", err)
+	}
+
+	return nil
+}
+
+func (fs *FileStorage) SaveWriter(reader io.Reader) error {
+	file, err := os.Create(fs.Config.FilePath)
+	if err != nil {
+		return fmt.Errorf("error creating file: %w", err)
+	}
+
+	_, err = io.Copy(file, reader)
+	if err != nil {
 		return fmt.Errorf("error writing to file: %w", err)
 	}
 

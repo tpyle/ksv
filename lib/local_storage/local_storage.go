@@ -1,13 +1,17 @@
 package localstorage
 
 import (
+	"io"
+
 	"github.com/tpyle/ksv/lib/ksverrors"
 )
 
 type LocalStorage interface {
 	LoadConfig(config map[string]interface{}) error
 	Load() ([]byte, error)
+	LoadReader() (io.Reader, error)
 	Save(reader []byte) error
+	SaveWriter(reader io.Reader) error
 }
 
 func GetLocalStorage(storageType string, config map[string]interface{}) (LocalStorage, error) {

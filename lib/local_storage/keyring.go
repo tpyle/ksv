@@ -3,6 +3,7 @@ package localstorage
 import (
 	"encoding/base64"
 	"fmt"
+	"io"
 	"strings"
 
 	"github.com/go-viper/mapstructure/v2"
@@ -65,6 +66,15 @@ func (fs *KeyringStorage) Load() ([]byte, error) {
 	return data, nil
 }
 
+func (fs *KeyringStorage) LoadReader() (io.Reader, error) {
+	data, err := fs.Load()
+	if err != nil {
+		return nil, err
+	}
+
+	return strings.NewReader(string(data)), nil
+}
+
 func (fs *KeyringStorage) Save(data []byte) error {
 	base64Data := base64.StdEncoding.EncodeToString(data)
 
@@ -89,6 +99,15 @@ func (fs *KeyringStorage) Save(data []byte) error {
 	}
 
 	return nil
+}
+
+func (fs *KeyringStorage) SaveWriter(reader io.Reader) error {
+	data, err := io.ReadAll(reader)
+	if err != nil {
+		return fmt.Errorf("error reading data from reader: %w", err)
+	}
+
+	return fs.Save(data)
 }
 
 func ChunkString(s string, chunkSize int) []string {
