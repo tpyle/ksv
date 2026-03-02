@@ -6,6 +6,7 @@ var (
 	ErrGeneratorInvalidLength    = errors.New("invalid length")
 	ErrGeneratorImpossibleParams = errors.New("impossible parameters")
 	ErrUnsupportedGenerator      = errors.New("unsupported generator")
+	ErrNoGeneratorCannotGenerate = errors.New("no generator cannot generate a value")
 )
 
 var (

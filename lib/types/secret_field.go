@@ -9,6 +9,13 @@ type SecretField struct {
 	GeneratorRef *GeneratorReference `json:"generatorRef"`
 }
 
+func NewSecretField(value string, generatorRef *GeneratorReference) *SecretField {
+	return &SecretField{
+		Value:        NewKSVString(value),
+		GeneratorRef: generatorRef,
+	}
+}
+
 func (sf *SecretField) Get(path string) (Queryable, error) {
 	switch path {
 	case "value":

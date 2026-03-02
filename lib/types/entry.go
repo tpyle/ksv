@@ -1,6 +1,9 @@
 package types
 
-import "github.com/tpyle/ksv/lib/ksverrors"
+import (
+	"github.com/tpyle/ksv/lib/generators"
+	"github.com/tpyle/ksv/lib/ksverrors"
+)
 
 type Entry struct {
 	IsIDP    *KSVBool   `json:"isIDP"`    // This is true if the entry is an IDP
@@ -10,8 +13,8 @@ type Entry struct {
 	Email    *KSVString `json:"email"`    // This is the email for the entry
 	Notes    *KSVString `json:"notes"`    // This is the notes for the entry
 
-	CustomFields KSVMap[*KSVString] `json:"customFields"`
-	SecretFields KSVMap[*KSVString] `json:"secretFields"`
+	CustomFields KSVMap[*KSVString]   `json:"customFields"`
+	SecretFields KSVMap[*SecretField] `json:"secretFields"`
 }
 
 func NewEntry(Username string, Email string, Notes string, IsIDP bool, IdpName string) *Entry {
@@ -22,7 +25,7 @@ func NewEntry(Username string, Email string, Notes string, IsIDP bool, IdpName s
 		Email:        NewKSVString(Email),
 		Notes:        NewKSVString(Notes),
 		CustomFields: KSVMap[*KSVString]{},
-		SecretFields: KSVMap[*KSVString]{},
+		SecretFields: KSVMap[*SecretField]{},
 	}
 }
 
@@ -35,9 +38,9 @@ func (e *Entry) AddCustomField(key string, value string) {
 
 func (e *Entry) AddSecretField(key string, value string) {
 	if e.SecretFields == nil {
-		e.SecretFields = KSVMap[*KSVString]{}
+		e.SecretFields = KSVMap[*SecretField]{}
 	}
-	e.SecretFields[key] = NewKSVString(value)
+	e.SecretFields[key] = NewSecretField(value, NewGeneratorReferenceFromRef(generators.NoGeneratorRef))
 }
 
 func (e *Entry) Get(path string) (Queryable, error) {

@@ -14,6 +14,16 @@ type GeneratorReference struct {
 	Supported bool                 `json:"-"`
 }
 
+func NewGeneratorReferenceFromRef(ref string) *GeneratorReference {
+	supported, generator := generators.GetGenerator(ref)
+	return &GeneratorReference{
+		Ref:       NewKSVString(ref),
+		Params:    NewKSVMap(map[string]string{}, NewKSVString),
+		Supported: supported,
+		Generator: generator,
+	}
+}
+
 func (gr *GeneratorReference) UnmarshalJSON(data []byte) error {
 	type Alias struct {
 		Ref    KSVString
